@@ -1,0 +1,2508 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Градиентная студия</title>
+<style>
+:root{color-scheme:dark;--base:#202428;--panel:#2a2f34;--inset:#23272b;--line:#444b52;--ink:#f0f1f2;--muted:#adb6bf;--accent:#eccb94;--a:#9ecad6;--b:#d7b5dc;font-family:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px}
+*{box-sizing:border-box}body{margin:0;background:var(--base);color:var(--ink)}
+button,input,select{font:inherit}input[type=text]{min-width:0;width:100%;border:1px solid var(--line);border-radius:6px;background:var(--inset);color:var(--ink);padding:7px 8px}button,select,input[type=number]{color:inherit;background:var(--inset);border:1px solid var(--line);border-radius:6px;min-height:34px}button{padding:7px 11px;cursor:pointer;white-space:nowrap}button:hover,select:hover{border-color:#9aa5ae}button:disabled{opacity:.5;cursor:wait}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}input{accent-color:var(--accent)}select,input[type=number]{width:100%;padding:6px 8px}input[type=range]{width:100%;margin:0;height:19px;cursor:pointer}input[type=checkbox]{margin:0}
+header{height:52px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px}h1{font-family:"Instrument Serif",Georgia,serif;font-size:28px;letter-spacing:-.04em;font-weight:400;margin:0}.header-actions{display:flex;align-items:center;gap:10px}.format-select{width:160px}#save{background:var(--accent);border-color:var(--accent);color:#302719;font-weight:650}
+main{max-width:1720px;margin:auto;display:grid;grid-template-columns:minmax(270px,1fr) minmax(600px,1.32fr);gap:14px;padding:12px 16px}figure{margin:0;align-self:start;position:sticky;top:20px}.stage{height:calc(100dvh - 78px);min-height:330px;max-height:950px;background:transparent;display:flex;align-items:center;justify-content:center;padding:0}.stage canvas{display:block;min-width:0;min-height:0;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}#status{font-size:12px;color:var(--muted)}#status:empty{display:none}.workbench{min-width:0;display:grid;gap:12px;align-self:start}.mix-panel{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:12px 14px}.mix-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.mix-toggle{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:650}.mix-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}.range{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 6px;font-size:12px;min-width:0}.range input{grid-column:1/-1}.range output{color:var(--muted);font-variant-numeric:tabular-nums}.mix-extra{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}.mix-extra input{width:115px;min-height:27px;padding:3px 6px}.mix-values[aria-disabled=true]{opacity:.4;pointer-events:none}
+.parents{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.parent{min-width:0;border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden}.parent-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}h2{font-size:14px;margin:0;font-weight:650}.parent[data-slot=a] h2{color:var(--a)}.parent[data-slot=b] h2{color:var(--b)}.reset{border:0;background:transparent;min-height:24px;padding:2px 0;color:var(--muted);font-size:12px}.parent-body{padding:10px;display:grid;gap:9px}.preset-pick{display:grid;grid-template-columns:52px minmax(0,1fr);gap:9px;align-items:center}.parent-preview{display:block;width:52px;height:65px;border-radius:4px;object-fit:cover}.preset-info{display:grid;gap:6px;min-width:0}.reference{color:var(--muted);font-size:11px;text-decoration:none}.reference:hover{color:var(--accent)}.reference[hidden]{display:none}.field{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px;font-size:12px}.palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) 28px;gap:5px}.palette-random{padding:0;min-height:30px;height:30px;font-size:20px;line-height:1}input[type=color]{width:100%;height:30px;padding:2px;border:1px solid var(--line);border-radius:5px;background:var(--inset);cursor:pointer}.sliders{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}.random-parent{width:100%;border-color:#6d7984;background:#35404a;font-weight:600}.random-all{width:100%;background:var(--accent);color:#302719;border-color:var(--accent);font-weight:650;min-height:39px}.bench-footer{display:grid;gap:6px}.inactive-note{display:none;color:var(--muted);font-size:11px}
+@media(min-width:830px) and (max-height:780px){header{height:48px}main{padding-top:12px;gap:16px}.stage{height:calc(100dvh - 76px)}.parent-body{padding:10px;gap:7px}.parent-header{padding:5px 10px}.sliders{gap:4px 10px}.mix-panel{padding:7px 12px}.workbench{gap:9px}.preset-pick{grid-template-columns:42px 1fr}.parent-preview{width:42px;height:52px}}
+@media(max-width:1099px){main{grid-template-columns:minmax(230px,.75fr) minmax(530px,1.5fr);gap:14px;padding:12px 16px}.sliders{gap:6px 8px}.parent-body{padding:10px}.parent-header{padding:9px 10px}.stage{padding:0}header{padding:0 16px}}
+@media(max-width:829px){main{grid-template-columns:1fr}figure{position:static}.stage{height:42dvh;min-height:230px}header{height:auto;min-height:62px;padding:12px 16px;flex-wrap:wrap}h1{font-size:26px}.header-actions{flex:1;justify-content:flex-end}.parents{gap:10px}.mix-panel{padding:11px}.parent-body{padding:10px}.workbench{gap:10px}}
+@media(max-width:519px){main{padding:12px}.parents{grid-template-columns:1fr}.parent-body{gap:11px}.stage{height:45dvh}.mix-heading{flex-wrap:wrap;gap:8px}.mix-extra{width:100%;justify-content:space-between}.mix-extra input{width:125px}.header-actions{width:100%;justify-content:space-between}.format-select{flex:1;width:auto}.sliders{gap:8px 14px}.parent-preview{width:52px;height:65px}.preset-pick{grid-template-columns:52px 1fr}}
+.random-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:6px;align-items:center}.random-option{display:flex;align-items:center;gap:5px;font-size:11px;white-space:nowrap}.source-actions{display:flex;gap:9px;align-items:center;min-width:0}.upload-button,.crop-again{font-size:11px;min-height:24px;padding:3px 7px}.upload-button{cursor:pointer}.source-actions .reference{margin-left:auto}.source-actions [hidden]{display:none}.image-control-disabled{opacity:.35}.parent-preview{object-fit:contain}
+dialog{color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;width:min(440px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}dialog::backdrop{background:#000b}.crop-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.crop-heading h2{font-size:17px}.crop-view{display:block;max-width:100%;width:auto;height:min(58dvh,480px);margin:0 auto 12px;touch-action:none;cursor:grab;background:#fff}.crop-view:active{cursor:grabbing}.crop-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.crop-apply{background:var(--accent);color:#302719;border-color:var(--accent)}.crop-tip{font-size:12px;color:var(--muted);margin:8px 0 0}.crop-zoom{margin-top:8px}.file-error{color:#efb2ad}
+#smart-dialog{width:min(760px,calc(100vw - 24px))}.smart-intro{display:flex;gap:12px;align-items:center;margin-bottom:12px}.smart-original{width:48px;height:60px;object-fit:contain;border-radius:3px}.smart-intro p{font-size:12px;color:var(--muted);margin:0;line-height:1.5}.smart-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}.smart-choice{padding:7px;text-align:left;white-space:normal}.smart-choice canvas{display:block;width:100%;height:190px;object-fit:contain;margin-bottom:7px}.smart-choice[aria-pressed=true]{border-color:var(--accent);background:#39352d;color:var(--accent)}.smart-bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}.smart-choice span{font-size:12px}.source-actions{gap:5px}.source-actions button{padding:3px 5px;font-size:10px}.source-actions .reference{font-size:13px}.smart-note{font-size:11px;color:var(--muted);margin:10px 0 0}@media(max-width:519px){.smart-choices{gap:5px}.smart-choice{padding:4px}.smart-choice canvas{height:125px}.smart-choice span{font-size:11px}.smart-bottom{grid-template-columns:1fr;gap:10px}}
+.full-random-row{grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}@media(min-width:520px) and (max-width:1099px){.random-row{grid-template-columns:repeat(3,1fr);gap:5px}.random-row .random-parent{grid-column:1/-1}}@media(max-width:359px){.random-row{grid-template-columns:repeat(3,1fr)}.random-row .random-parent{grid-column:1/-1}.full-random-row{grid-template-columns:1fr;gap:7px}}
+/* Geometry changes once; snapshots/transforms animate without per-frame reflow. */
+.parents{--parent-gap:12px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--parent-gap)}
+.parent-slot-b{min-width:0;overflow:hidden;max-height:var(--b-panel-height,650px);visibility:visible}
+.parent-slot-b>.parent{width:var(--b-panel-width,330px)}
+.single-mode .parents{grid-template-columns:minmax(0,1fr) minmax(0,0fr);column-gap:0}
+.single-mode .parent-slot-b{max-height:0;visibility:hidden;pointer-events:none}
+.mix-values{max-height:64px;overflow:hidden}.single-mode .mix-values{max-height:0}.single-mode .mix-heading{margin-bottom:0}.single-mode .mix-extra{display:none}
+#parent-a{view-transition-name:parent-a}#parent-b{view-transition-name:parent-b}.mix-panel{view-transition-name:mix-controls}.bench-footer{view-transition-name:random-footer}
+::view-transition-group(*){animation-duration:360ms;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation:none}
+::view-transition-new(parent-b){animation:parent-enter 280ms ease-out both}
+::view-transition-old(parent-b){animation:parent-exit 180ms ease-in both}
+@keyframes parent-enter{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes parent-exit{from{opacity:1;transform:none}to{opacity:0;transform:translateX(12px)}}
+@media(max-width:829px){.parents{--parent-gap:10px}}
+@media(max-width:519px){.parents,.single-mode .parents{grid-template-columns:minmax(0,1fr);column-gap:0;row-gap:var(--parent-gap)}.single-mode .parents{row-gap:0}@keyframes parent-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes parent-exit{from{opacity:1;transform:none}to{opacity:0;transform:translateY(10px)}}}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* Compact controls share the editor palette and never use OS-sized menus. */
+.select-control{display:flex;min-width:0;width:100%}.select-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;text-align:left}.select-trigger span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.select-trigger::after{content:'⌄';color:var(--muted)}.select-trigger:disabled,#undo:disabled{cursor:default}.preset-navigation{display:grid;grid-template-columns:27px minmax(0,1fr) 27px;gap:4px;min-width:0}.preset-step{padding:0;font-size:21px;color:var(--muted)}.select-menu{position:fixed;z-index:1000;margin:0;padding:5px;overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);box-shadow:0 12px 32px #0006;scrollbar-width:thin;scrollbar-color:var(--line) transparent}.select-option{display:block;width:100%;border:0;background:transparent;text-align:left;white-space:normal;min-height:32px;padding:7px 9px;border-radius:4px}.select-option[aria-selected=true]{background:#403a30;color:var(--accent)}.select-option:hover,.select-option:focus{background:#3a424a;outline:none}.format-select.select-control{width:160px}#undo{color:var(--muted)}
+@media(max-width:519px){.header-actions{gap:6px}.format-select.select-control{flex:1;width:auto}.header-actions button{padding-left:8px;padding-right:8px}}
+</style>
+<style>
+#ai-dialog{width:min(1040px,calc(100vw - 24px))}.ai-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.ai-heading h2{font-family:Georgia,serif;font-size:24px;font-weight:400}.ai-intro{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;margin-bottom:16px}.ai-intro canvas{width:64px;height:80px;object-fit:contain;border-radius:4px}.ai-intro p{margin:0;color:var(--muted);line-height:1.6;max-width:65ch}.ai-connection{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.ai-connection label{flex:1;min-width:190px}.ai-connection select{max-width:290px}.ai-status{font-size:12px;color:var(--muted);min-height:18px;line-height:1.5;margin:10px 0}.ai-status[data-error=true]{color:#efb2ad}.ai-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.ai-card{padding:8px;text-align:left;white-space:normal;min-width:0}.ai-card canvas{display:block;width:100%;height:290px;object-fit:contain;background:var(--inset);margin-bottom:10px}.ai-card strong{display:block;font-size:13px;margin-bottom:5px}.ai-card small{display:block;color:var(--muted);font-size:11px;line-height:1.5;min-height:34px}.ai-card[aria-pressed=true]{border-color:var(--accent);background:#39352d}.ai-controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}.ai-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ai-footer .field{flex:1;min-width:180px}.ai-footer .crop-apply{margin-left:auto}.source-actions{flex-wrap:wrap}.source-actions .ai-upload{color:var(--accent);border-color:#74654e}#ai-reroll{margin-right:auto}
+.preset-storage-area{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.single-mode .preset-storage-area{grid-template-columns:minmax(0,1fr)}.single-mode .preset-storage[data-slot=b],.single-mode .storage-title{display:none}.storage-title{font-size:11px;color:var(--muted)}.preset-storage{display:grid;gap:5px;min-width:0}@media(max-width:519px){.preset-storage-area{grid-template-columns:minmax(0,1fr)}}.preset-storage-note{margin:0;font-size:10px;line-height:1.4;color:var(--muted)}.preset-files{display:flex;flex-wrap:wrap;gap:6px}.preset-files button{flex:1 1 115px;min-height:28px;font-size:11px;padding:4px 6px}.preset-files button:disabled{cursor:default}
+.save-choice{border:0;padding:0;margin:12px 0;display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12px}.save-choice legend{padding:0;margin-bottom:7px;font-weight:600}.save-choice label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+@media(max-width:650px){.ai-cards{gap:6px}.ai-card{padding:5px}.ai-card canvas{height:190px}.ai-card small{font-size:10px}.ai-heading h2{font-size:20px}.ai-controls{gap:12px}.ai-footer .field{flex-basis:100%}}@media(max-width:400px){.ai-card canvas{height:145px}.ai-card strong{font-size:11px}.ai-controls{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="single-mode">
+<header><h1>Градиентная студия</h1><div class="header-actions"><select id="format" class="format-select" aria-label="Формат изображения"><option value="4:5">4:5 · Пост</option><option value="9:16">9:16 · Сторис</option></select><button id="undo" type="button" disabled title="Вернуть генерацию перед рандомом (Ctrl / ⌘ + Z)">↶ Undo</button><span id="status" role="status"></span><button id="save" type="button">Скачать PNG</button></div></header>
+<main>
+<figure><div class="stage"><canvas id="preview" width="384" height="480" aria-label="Результат скрещивания"></canvas></div></figure>
+<div class="workbench">
+<section class="mix-panel" aria-label="Скрещивание">
+<div class="mix-heading"><label class="mix-toggle"><input id="cross-enabled" type="checkbox">Скрещивание A + B</label><label class="mix-extra">Seed смеси<input id="mix-seed" type="number" min="0" max="4294967295" step="1" value="14721" aria-label="Seed смеси"></label></div>
+<div id="mix-values" class="mix-values mix-grid"><label class="range"><span>Доля B</span><output id="cross-amount-label" for="cross-amount">50%</output><input id="cross-amount" type="range" min="0" max="100" value="50"></label><label class="range"><span>Сила мутации</span><output id="mutation-label" for="mutation">35%</output><input id="mutation" type="range" min="0" max="100" value="35"></label></div>
+</section>
+<div class="parents" id="parents"></div>
+<div class="bench-footer full-random-row"><button id="random-all" class="random-all" type="button" title="Выбрать два случайных пресета, все их настройки и способ скрещивания">Полный рандом</button><label class="random-option" title="Иногда давать пресетам чужие формы"><input id="full-random-shapes" type="checkbox" checked>Чужие формы</label></div>
+<div id="preset-storage-area" class="preset-storage-area"></div>
+</div>
+</main>
+<dialog id="crop-dialog" aria-labelledby="crop-title">
+<div class="crop-heading"><h2 id="crop-title">Обрезка изображения</h2><button id="crop-reset" type="button">По центру</button></div>
+<canvas id="crop-view" class="crop-view" width="480" height="600" tabindex="0" aria-label="Область обрезки: перетаскивайте картинку или используйте стрелки"></canvas>
+<label class="range crop-zoom"><span>Масштаб</span><output id="crop-zoom-label" for="crop-zoom">100%</output><input id="crop-zoom" type="range" min="1" max="4" step="0.01" value="1"></label>
+<p class="crop-tip">Перетащите картинку, чтобы выбрать фрагмент.</p>
+<div class="crop-footer"><button id="crop-cancel" type="button">Отмена</button><button id="crop-apply" class="crop-apply" type="button">Применить</button></div>
+</dialog>
+<dialog id="smart-dialog" aria-labelledby="smart-title">
+<div class="crop-heading"><h2 id="smart-title">Умный импорт</h2></div>
+<div class="smart-intro"><canvas id="smart-original" class="smart-original" aria-label="Исходник"></canvas><p>Выберите интерпретацию. Цвета и геометрия станут редактируемым пресетом.</p></div>
+<div class="smart-choices">
+<button id="smart-choice-soft" class="smart-choice" type="button" aria-pressed="true"><canvas id="smart-preview-soft" aria-hidden="true"></canvas><span>Мягкие массы</span></button>
+<button id="smart-choice-shapes" class="smart-choice" type="button" aria-pressed="false"><canvas id="smart-preview-shapes" aria-hidden="true"></canvas><span>Чёткие формы</span></button>
+<button id="smart-choice-bokeh" class="smart-choice" type="button" aria-pressed="false"><canvas id="smart-preview-bokeh" aria-hidden="true"></canvas><span>Боке</span></button>
+</div>
+<div class="smart-bottom"><label class="field">Название<input id="smart-name" type="text" maxlength="80" aria-label="Название нового пресета"></label><label class="range"><span>Число форм</span><output id="smart-detail-label" for="smart-detail"></output><input id="smart-detail" type="range" min="1" max="12" value="6"></label></div>
+<p class="smart-note">Анализ крупных цветовых пятен. Мелкие детали упрощаются. Сохранение в библиотеку — по вашему выбору.</p>
+<fieldset class="save-choice"><legend>Сохранить пресет?</legend><label><input id="smart-save-no" type="radio" name="smart-save" value="no" checked>Нет, только попробовать</label><label><input id="smart-save-yes" type="radio" name="smart-save" value="yes">Да, в библиотеку браузера</label></fieldset>
+<div class="crop-footer"><button id="smart-cancel" type="button">Отмена</button><button id="smart-apply" class="crop-apply" type="button">Создать пресет</button></div>
+</dialog>
+<dialog id="ai-dialog" aria-labelledby="ai-title">
+<div class="ai-heading"><h2 id="ai-title">Формы из фотографии</h2><button id="ai-close" type="button" aria-label="Закрыть окно обработки фотографии">✕</button></div>
+<div class="ai-intro"><canvas id="ai-original" aria-label="Загруженный референс"></canvas><p>Реальные цвета и контуры исходника. Выберите обработку; геометрию и палитру можно редактировать и скрещивать.</p></div>
+<p id="ai-status" class="ai-status" role="status" aria-live="polite"></p>
+<div class="ai-cards">
+<button class="ai-card" id="ai-card-0" type="button" aria-pressed="true" disabled><canvas id="ai-preview-0" aria-hidden="true"></canvas><strong>Цветовые формы</strong><small id="ai-caption-0">Сохраняет ритм и расположение форм.</small></button>
+<button class="ai-card" id="ai-card-1" type="button" aria-pressed="false" disabled><canvas id="ai-preview-1" aria-hidden="true"></canvas><strong>Постер</strong><small id="ai-caption-1">Выразительные силуэты и чёткие детали.</small></button>
+<button class="ai-card" id="ai-card-2" type="button" aria-pressed="false" disabled><canvas id="ai-preview-2" aria-hidden="true"></canvas><strong>Контурный рисунок</strong><small id="ai-caption-2">Новые сочетания, глубина и фактура.</small></button>
+</div>
+<div class="ai-controls"><label class="range"><span>Упрощение контуров</span><output id="ai-freedom-label" for="ai-freedom">50%</output><input id="ai-freedom" type="range" min="0" max="100" value="50" disabled></label><label class="range"><span>Детализация</span><output id="ai-detail-label" for="ai-detail">8</output><input id="ai-detail" type="range" min="1" max="12" value="8" disabled></label></div>
+<fieldset class="save-choice"><legend>Сохранить пресет?</legend><label><input id="ai-save-no" type="radio" name="ai-save" value="no" checked>Нет, только попробовать</label><label><input id="ai-save-yes" type="radio" name="ai-save" value="yes">Да, в библиотеку браузера</label></fieldset>
+<div class="ai-footer"><label class="field">Название <input id="ai-name" type="text" maxlength="80" value="Мой паттерн"></label><button id="ai-apply" class="crop-apply" type="button" disabled>Создать пресет</button></div>
+</dialog>
+<script>
+"use strict";
+const presets = {
+  warm: {
+    seed: 23171,
+    shape: "organic",
+    values: {count: 6, scale: 49, warp: 29, angle: -10, softness: 26, edge: 45, grain: 30, texture: 33},
+    colors: ["#68967d", "#9fb18a", "#dcd2a3", "#e8a34f", "#9b3223"],
+    anchors: [
+      [.58,.12,.35,.15,-.8,-.47],
+      [.12,.32,.47,.15,1.09,-.32],
+      [.21,.57,.48,.16,-.81,-.46],
+      [1.04,.65,.36,.19,1.12,-.62],
+      [-.12,.99,.39,.13,1.12,.65],
+      [.04,-.08,.55,.13,.96,-.42]
+    ]
+  },
+  bright: {
+    seed: 60493,
+    shape: "organic",
+    values: {count: 6, scale: 47, warp: 36, angle: 5, softness: 28, edge: 53, grain: 13, texture: 26},
+    colors: ["#c8a5e2", "#ceb8e0", "#d5ceba", "#ee9759", "#ff6419"],
+    anchors: [
+      [.23,.16,.24,.18,-.95,-.65],
+      [.16,.34,.27,.13,1.18,-.42],
+      [.72,.18,.33,.22,-.98,-.48],
+      [1.04,.24,.19,.45,1.34,-.06],
+      [.65,.60,.44,.15,1.19,.25],
+      [.78,.90,.38,.13,-1.02,-.13]
+    ]
+  }
+};
+
+Object.assign(presets, {
+  "rose-discs": {
+    "name": "Розовые диски",
+    "shape": "orb",
+    "seed": 71001,
+    "colors": [
+      "#f8e8ed",
+      "#eda1b7",
+      "#e56b8d",
+      "#fff6c7",
+      "#f4c5ae"
+    ],
+    "values": {
+      "count": 2,
+      "scale": 49,
+      "warp": 8,
+      "angle": 0,
+      "softness": 12,
+      "edge": 65,
+      "grain": 8,
+      "texture": 12
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.28.12.png",
+    "description": "Два перекрывающихся диска, розовый туман и сливочное свечение."
+  },
+  "pearl-halo": {
+    "name": "Жемчужный ореол",
+    "shape": "halo",
+    "seed": 72280,
+    "colors": [
+      "#f2f0e3",
+      "#d3d6e5",
+      "#d7c4cc",
+      "#e4a78e",
+      "#f0d5b0"
+    ],
+    "values": {
+      "count": 1,
+      "scale": 62,
+      "warp": 10,
+      "angle": -15,
+      "softness": 48,
+      "edge": 22,
+      "grain": 10,
+      "texture": 25
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.28.31.png",
+    "description": "Смещённый холодный центр и широкое персиковое свечение."
+  },
+  "amber-flow": {
+    "name": "Янтарные часы",
+    "shape": "hourglass",
+    "seed": 73559,
+    "colors": [
+      "#f9dfb8",
+      "#f6c17c",
+      "#f3a447",
+      "#eb6e1f",
+      "#ffc16b"
+    ],
+    "values": {
+      "count": 2,
+      "scale": 58,
+      "warp": 16,
+      "angle": 0,
+      "softness": 15,
+      "edge": 60,
+      "grain": 12,
+      "texture": 20
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.29.33.png",
+    "description": "Вогнутая оранжевая колонна и округлое основание."
+  },
+  "candy-loops": {
+    "name": "Карамельные петли",
+    "shape": "ribbons",
+    "seed": 74838,
+    "colors": [
+      "#eee0cb",
+      "#ffca65",
+      "#eb8fb8",
+      "#dc462a",
+      "#f6b356"
+    ],
+    "values": {
+      "count": 3,
+      "scale": 46,
+      "warp": 55,
+      "angle": 0,
+      "softness": 0,
+      "edge": 90,
+      "grain": 5,
+      "texture": 15
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.29.46.png",
+    "description": "Непрерывные петли из жёлтой, розовой и красной лент."
+  },
+  "pastel-mist": {
+    "name": "Пастельная дымка",
+    "shape": "mesh",
+    "seed": 76117,
+    "colors": [
+      "#adbcd5",
+      "#e8e4b9",
+      "#eac8e0",
+      "#f2dbe1",
+      "#aebfe0"
+    ],
+    "values": {
+      "count": 5,
+      "scale": 64,
+      "warp": 22,
+      "angle": 0,
+      "softness": 45,
+      "edge": 22,
+      "grain": 12,
+      "texture": 25
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.30.28.png",
+    "description": "Голубая рамка, лимонный свет слева и сиренево-розовое облако."
+  },
+  "mint-ring": {
+    "name": "Мятный ореол",
+    "shape": "halo",
+    "seed": 77396,
+    "colors": [
+      "#f1ecdf",
+      "#cbecc7",
+      "#e7c9b1",
+      "#df9894",
+      "#efc8bf"
+    ],
+    "values": {
+      "count": 1,
+      "scale": 70,
+      "warp": 4,
+      "angle": 0,
+      "softness": 29,
+      "edge": 45,
+      "grain": 8,
+      "texture": 15
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.30.39.png",
+    "description": "Мятный центр внутри широкого кораллового кольца."
+  },
+  "raspberry-sun": {
+    "name": "Малиновое солнце",
+    "shape": "halo",
+    "seed": 78675,
+    "colors": [
+      "#f5f1e4",
+      "#cc4566",
+      "#de6246",
+      "#e9aa37",
+      "#f3d99e"
+    ],
+    "values": {
+      "count": 1,
+      "scale": 48,
+      "warp": 3,
+      "angle": 0,
+      "softness": 26,
+      "edge": 62,
+      "grain": 10,
+      "texture": 20
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.30.58.png",
+    "description": "Малиновая сердцевина с охристым ореолом на молочном фоне."
+  },
+  "lilac-flare": {
+    "name": "Сиреневый блик",
+    "shape": "flare",
+    "seed": 79954,
+    "colors": [
+      "#58699d",
+      "#8e88ad",
+      "#e8dfe0",
+      "#ffd78d",
+      "#c6b4d2"
+    ],
+    "values": {
+      "count": 8,
+      "scale": 45,
+      "warp": 18,
+      "angle": 0,
+      "softness": 9,
+      "edge": 65,
+      "grain": 22,
+      "texture": 18
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.31.21.png",
+    "description": "Звёздчатый лучистый блик, тонкое кольцо и сиреневые облака."
+  },
+  "orange-disc": {
+    "name": "Оранжевый диск",
+    "shape": "sun",
+    "seed": 81233,
+    "colors": [
+      "#78482b",
+      "#9c4e29",
+      "#cf632c",
+      "#f78432",
+      "#efa04b"
+    ],
+    "values": {
+      "count": 1,
+      "scale": 76,
+      "warp": 5,
+      "angle": 0,
+      "softness": 8,
+      "edge": 75,
+      "grain": 23,
+      "texture": 25
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.31.45.png",
+    "description": "Крупный низкий солнечный диск на тёплом коричневом фоне."
+  },
+  "sunset-bow": {
+    "name": "Закатная радуга",
+    "shape": "sunbow",
+    "seed": 82512,
+    "colors": [
+      "#5a5267",
+      "#af7675",
+      "#e99560",
+      "#ffb344",
+      "#fff1ac"
+    ],
+    "values": {
+      "count": 7,
+      "scale": 64,
+      "warp": 18,
+      "angle": 0,
+      "softness": 9,
+      "edge": 72,
+      "grain": 17,
+      "texture": 20
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.31.57.png",
+    "description": "Светящаяся дуга над солнцем, облачный горизонт и расходящиеся лучи."
+  },
+  "flower-bokeh": {
+    "name": "Цветочное боке",
+    "shape": "bokeh",
+    "seed": 83791,
+    "colors": [
+      "#e7d7c5",
+      "#a8bbb2",
+      "#f7d865",
+      "#e9964b",
+      "#f5bca4"
+    ],
+    "values": {
+      "count": 9,
+      "scale": 54,
+      "warp": 33,
+      "angle": 0,
+      "softness": 35,
+      "edge": 40,
+      "grain": 22,
+      "texture": 27
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.32.26.png",
+    "description": "Размытые жёлтые лепестки, оранжевые пятна и шалфейные просветы."
+  },
+  "leaf-shadows": {
+    "name": "Тени на траве",
+    "shape": "foliage",
+    "seed": 85070,
+    "colors": [
+      "#b9c783",
+      "#8fa650",
+      "#4e712f",
+      "#244a22",
+      "#10391a"
+    ],
+    "values": {
+      "count": 8,
+      "scale": 50,
+      "warp": 35,
+      "angle": -12,
+      "softness": 9,
+      "edge": 77,
+      "grain": 35,
+      "texture": 18
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.35.11.png",
+    "description": "Диагональные тени ветвей и мелкой листвы на светлой зелени."
+  },
+  "sky-canopy": {
+    "name": "Небо сквозь крону",
+    "shape": "canopy",
+    "seed": 86349,
+    "colors": [
+      "#93bdca",
+      "#bfd5cb",
+      "#9bb95a",
+      "#50772c",
+      "#173e20"
+    ],
+    "values": {
+      "count": 9,
+      "scale": 56,
+      "warp": 35,
+      "angle": 8,
+      "softness": 30,
+      "edge": 56,
+      "grain": 22,
+      "texture": 22
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.35.24.png",
+    "description": "Голубой просвет в центре, зелёное боке и тонкие ветки по краям."
+  },
+  "sea-ripples": {
+    "name": "Солнечная рябь",
+    "shape": "water",
+    "seed": 87628,
+    "colors": [
+      "#62918f",
+      "#7ca7a0",
+      "#3c7c7d",
+      "#b9c994",
+      "#e5dfa1"
+    ],
+    "values": {
+      "count": 9,
+      "scale": 50,
+      "warp": 43,
+      "angle": -6,
+      "softness": 6,
+      "edge": 67,
+      "grain": 25,
+      "texture": 18
+    },
+    "anchors": [],
+    "source": "Снимок экрана 2026-11-13 в 15.35.32.png",
+    "description": "Бирюзовые волны и россыпь вытянутых золотистых бликов."
+  }
+});
+presets.warm.name = "Шалфей и охра";
+presets.bright.name = "Сирень и апельсин";
+
+
+// Six procedural studies from the embroidery references.
+Object.assign(presets, {
+  "embroidery-scatter": {
+    "name": "Вышивка · Россыпь",
+    "shape": "embroidery-scatter",
+    "seed": 91001,
+    "colors": [
+      "#350e25",
+      "#e75212",
+      "#c6a04f",
+      "#587ab0",
+      "#6b945e"
+    ],
+    "values": {
+      "count": 8,
+      "scale": 50,
+      "warp": 14,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "01-россыпь.png",
+    "description": "Отдельные розетки, золотые пионы и синие цветы на сливовом фоне."
+  },
+  "embroidery-diagonal": {
+    "name": "Вышивка · Диагональный сад",
+    "shape": "embroidery-diagonal",
+    "seed": 91002,
+    "colors": [
+      "#360f24",
+      "#dc4b19",
+      "#c9a658",
+      "#5674ad",
+      "#648c52"
+    ],
+    "values": {
+      "count": 10,
+      "scale": 50,
+      "warp": 14,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "Lush Burgundy Garden Embroidery.png",
+    "description": "Диагональный поток цветов, перистые листья и золотые стежки."
+  },
+  "embroidery-bouquets": {
+    "name": "Вышивка · Букеты на бархате",
+    "shape": "embroidery-bouquets",
+    "seed": 91003,
+    "colors": [
+      "#3d102c",
+      "#e45117",
+      "#c7a257",
+      "#bb4c8a",
+      "#60834d"
+    ],
+    "values": {
+      "count": 6,
+      "scale": 50,
+      "warp": 14,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "Opulent Floral Embroidery on Plum Velvet-2.png",
+    "description": "Свободно расположенные букеты с розовыми и оранжевыми розетками."
+  },
+  "embroidery-tapestry": {
+    "name": "Вышивка · Цветочный гобелен",
+    "shape": "embroidery-tapestry",
+    "seed": 91004,
+    "colors": [
+      "#320e25",
+      "#e85416",
+      "#c6a05b",
+      "#7663a5",
+      "#699b80"
+    ],
+    "values": {
+      "count": 9,
+      "scale": 50,
+      "warp": 14,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "Opulent Plum Floral Embroidery Tapestry-1.png",
+    "description": "Чередование золотых пионов, лилий, колокольчиков и фиолетовых цветов."
+  },
+  "embroidery-carpet": {
+    "name": "Вышивка · Золотой ковёр",
+    "shape": "embroidery-carpet",
+    "seed": 91005,
+    "colors": [
+      "#320e22",
+      "#ee5417",
+      "#d1aa57",
+      "#a05494",
+      "#6c9567"
+    ],
+    "values": {
+      "count": 11,
+      "scale": 50,
+      "warp": 14,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "Ornate Burgundy Floral Embroidery Carpet-3.png",
+    "description": "Плотное переплетение крупных и мелких вышитых цветов."
+  },
+  "embroidery-rosette": {
+    "name": "Вышивка · Огненная розетка",
+    "shape": "embroidery-rosette",
+    "seed": 91006,
+    "colors": [
+      "#340d39",
+      "#e9400a",
+      "#d8ac42",
+      "#b75383",
+      "#73855a"
+    ],
+    "values": {
+      "count": 1,
+      "scale": 50,
+      "warp": 0,
+      "angle": 0,
+      "softness": 0,
+      "edge": 85,
+      "grain": 7,
+      "texture": 12
+    },
+    "anchors": [],
+    "sourceFolder": "генерация вышивка",
+    "source": "дополнительно-круглый-цветок.png",
+    "description": "Круглая оранжевая розетка с витой кремовой каймой и золотой серединой."
+  }
+});
+
+const controls = [
+  ["count","Число форм",1,12,""],
+  ["scale","Размер форм",0,100,"%"],
+  ["warp","Искажение",0,100,"%"],
+  ["angle","Поворот",-180,180,"°"],
+  ["softness","Размытие",0,100,"%"],
+  ["edge","Резкость",0,100,"%"],
+  ["grain","Зерно",0,100,"%"],
+  ["texture","Размер зерна",0,100,"%"]
+];
+function rng(seed) {
+  return () => {
+    seed = (seed + 0x6D2B79F5) >>> 0;
+    let n = Math.imul(seed ^ (seed >>> 15), seed | 1);
+    n ^= n + Math.imul(n ^ (n >>> 7), n | 61);
+    return ((n ^ (n >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
+const mix = (a,b,t) => a + (b-a)*t;
+const smooth = t => t*t*(3-2*t);
+
+function makeFields(settings,aspect) {
+  const {seed,preset,count,scale,angle,shape} = settings;
+  const random = rng(seed);
+  const radians = angle * Math.PI / 180;
+  const size = mix(.45,1.85,scale/100);
+  return Array.from({length:count},(_,index) => {
+    let anchor;
+    if (seed === preset.seed && index < preset.anchors.length) {
+      anchor = preset.anchors[index];
+    } else {
+      const x = random()*1.32-.16;
+      const y = random()*1.25-.125;
+      const strength = mix(.74,1.3,random()) * (index % 2 ? -1 : 1);
+      anchor = [x,y,mix(.23,.56,random()),mix(.12,.26,random()),strength,random()*Math.PI];
+    }
+    const [x,y,rx,ry,strength,tilt] = anchor;
+    const physicalWidth = rx * aspect;
+    const radius = Math.sqrt(physicalWidth * ry);
+    const width = shape === "round" ? radius : shape === "long" ? radius*1.85 : physicalWidth;
+    const height = shape === "round" ? radius : shape === "long" ? radius*.44 : ry;
+    const dx = (x-.5)*aspect;
+    const dy = y-.5;
+    return {
+      x: .5*aspect + dx*Math.cos(radians)-dy*Math.sin(radians),
+      y: .5 + dx*Math.sin(radians)+dy*Math.cos(radians),
+      c: Math.cos(tilt+radians), s: Math.sin(tilt+radians),
+      invX: 1/(width*size), invY: 1/(height*size), strength
+    };
+  });
+}
+
+function colorTable(colors,edge) {
+  const stops = [0,.26,.50,.71,1];
+  const rgb = colors.map(color => [1,3,5].map(index => parseInt(color.slice(index,index+2),16)));
+  const table = new Uint8ClampedArray(3072);
+  for (let i=0;i<1024;i++) {
+    const value = i/1023;
+    const index = Math.max(0,stops.findIndex(stop => stop >= value)-1);
+    const t = (value-stops[index])/(stops[index+1]-stops[index]);
+    const fraction = mix(t,smooth(t),edge/100);
+    for (let c=0;c<3;c++) table[i*3+c] = mix(rgb[index][c],rgb[index+1][c],fraction);
+  }
+  return table;
+}
+
+// Sliding box filters smooth the colors before grain is added. Clamped edges
+// extend the image across the filter window without introducing a frame.
+function boxBlur(source,target,width,height,radius,vertical) {
+  const lines = vertical ? width : height;
+  const length = vertical ? height : width;
+  const stride = vertical ? width*4 : 4;
+  const windowSize = radius*2+1;
+  for (let line=0;line<lines;line++) {
+    const start = vertical ? line*4 : line*width*4;
+    let r=0,g=0,b=0;
+    for (let k=-radius;k<=radius;k++) {
+      const i = start + clamp(k,0,length-1)*stride;
+      r+=source[i]; g+=source[i+1]; b+=source[i+2];
+    }
+    for (let k=0,i=start;k<length;k++,i+=stride) {
+      target[i]=r/windowSize; target[i+1]=g/windowSize; target[i+2]=b/windowSize;
+      const add = start + Math.min(length-1,k+radius+1)*stride;
+      const remove = start + Math.max(0,k-radius)*stride;
+      r+=source[add]-source[remove];
+      g+=source[add+1]-source[remove+1];
+      b+=source[add+2]-source[remove+2];
+    }
+  }
+}
+
+function hash(x,y,seed) {
+  let n = Math.imul(x,0x1f123bb5) ^ Math.imul(y,0x5f356495) ^ seed;
+  n = Math.imul(n ^ (n >>> 16),0x7feb352d);
+  n = Math.imul(n ^ (n >>> 15),0x846ca68b);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+}
+
+function applyGrain(data,width,height,settings) {
+  if (!settings.grain) return;
+  const size = mix(1,6,settings.texture/100);
+  const amount = settings.grain*.78;
+  const seed = settings.seed ^ 0x01caa9f1;
+  // Sample the same texture coordinates at preview and export sizes.
+  const step = 1080/width;
+  for (let y=0;y<height;y++) {
+    const gy = (y+.5)*step/size;
+    const yi = Math.floor(gy);
+    const ty = smooth(gy-yi);
+    for (let x=0,i=y*width*4;x<width;x++,i+=4) {
+      const gx = (x+.5)*step/size;
+      const xi = Math.floor(gx);
+      const tx = smooth(gx-xi);
+      const upper = mix(hash(xi,yi,seed),hash(xi+1,yi,seed),tx);
+      const lower = mix(hash(xi,yi+1,seed),hash(xi+1,yi+1,seed),tx);
+      const fine = hash(Math.floor((x+.5)*step),Math.floor((y+.5)*step),seed ^ 12345);
+      const noise = (mix(mix(upper,lower,ty),fine,.26)-.5)*amount;
+      data[i]+=noise; data[i+1]+=noise; data[i+2]+=noise;
+    }
+  }
+}
+
+// Threaded botanical motifs are rebuilt from vectors at every output size.
+// No external assets: the studio remains a single offline HTML file.
+function renderEmbroidery(ctx,width,height,settings) {
+  const {colors:p,shape,count,seed}=settings,random=rng(seed);
+  const aspect=width/height,warp=settings.warp/100,edge=settings.edge/100;
+  const tint=(color,amount)=>'#'+[1,3,5].map(i=>Math.round(mix(parseInt(color.slice(i,i+2),16),amount>0?255:0,Math.abs(amount))).toString(16).padStart(2,'0')).join('');
+  const blend=(a,b,t)=>'#'+[1,3,5].map(i=>Math.round(mix(parseInt(a.slice(i,i+2),16),parseInt(b.slice(i,i+2),16),t)).toString(16).padStart(2,'0')).join('');
+  const cream=tint(p[2],.68),green=p[4],gold=p[2],rose=tint(blend(p[1],p[3],.65),.22);
+  ctx.fillStyle=p[0];ctx.fillRect(0,0,width,height);
+  ctx.save();ctx.translate(width/2,height/2);ctx.rotate(settings.angle*Math.PI/180);
+  ctx.scale(height,height);ctx.scale(mix(.5,1.5,settings.scale/100),mix(.5,1.5,settings.scale/100));
+  ctx.transform(1,warp*.06,warp*.08,1,0,0);
+  const line=(color,w,draw)=>{ctx.beginPath();draw();ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();};
+  const dot=(x,y,r,color)=>{ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
+  const thread=(color,w,draw)=>{
+    line(tint(color,-.42),w*1.7,draw);line(color,w,draw);
+    if(edge>.35)line(tint(color,.35),w*.27,draw);
+  };
+  const leaf=(x,y,size,angle,color)=>{
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);ctx.scale(size,size);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(-.8,-.45,-.55,-1.5,0,-2.3);ctx.bezierCurveTo(.55,-1.5,.8,-.45,0,0);
+    ctx.fillStyle=tint(color,-.2);ctx.fill();
+    for(let j=1;j<18;j++) {
+      const t=j/18,y=-2.3*t,w=Math.sin(t*Math.PI)*.48;
+      thread(j%3?color:tint(color,.2),.045,()=>{ctx.moveTo(-w,y-.25);ctx.lineTo(0,y);ctx.lineTo(w,y-.25);});
+    }
+    thread(tint(color,.34),.04,()=>{ctx.moveTo(0,0);ctx.lineTo(0,-2.25);});ctx.restore();
+  };
+  const sprig=(x,y,size,angle)=>{
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+    thread(gold,.0012,()=>{ctx.moveTo(0,0);ctx.bezierCurveTo(size*.25,-size*.5,-size*.2,-size,size*.1,-size*1.7);});
+    for(let i=1;i<=5;i++)for(const sign of [-1,1]) {
+      const xx=sign*size*.24,yy=-i*size*.27;
+      thread(cream,.001,()=>{ctx.moveTo(0,yy+size*.15);ctx.quadraticCurveTo(xx*1.7,yy-size*.23,xx,yy);});
+      dot(xx,yy,size*.06,cream);
+    }
+    ctx.restore();
+  };
+  const rosette=(radius,color)=>{
+    dot(0,0,radius,tint(color,-.4));
+    // Offset short stitches form irregular concentric coils.
+    for(let ring=2;ring<55;ring++) {
+      const r=radius*ring/55,n=Math.ceil(ring*4),phase=random()*Math.PI*2;
+      line(tint(color,-.12),radius*.018,()=>ctx.arc(0,0,r,0,Math.PI*2));
+      for(let j=0;j<n;j++) {
+        const a=j/n*Math.PI*2+phase,da=(.6+random()*.3)*Math.PI*2/n;
+        line(tint(color,(random()-.45)*.30),radius*.011,()=>ctx.arc(0,0,r*(.997+random()*.006),a,a+da));
+      }
+    }
+    for(let strand=0;strand<2;strand++) {
+      thread(cream,radius*.012,()=>{
+        for(let i=0;i<=900;i++) {
+          const a=i/900*Math.PI*2,r=radius*(1.035+.022*Math.sin(a*45+strand*Math.PI));
+          const x=Math.cos(a)*r,y=Math.sin(a)*r;
+          if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }
+      });
+    }
+    dot(0,0,radius*.22,cream);dot(0,0,radius*.16,gold);
+    for(let i=0;i<60;i++){const a=i*2.4,r=Math.sqrt(i/60)*radius*.145;dot(Math.cos(a)*r,Math.sin(a)*r,radius*.014,tint(gold,i%2?.25:-.22));}
+  };
+  const petal=(angle,reach,width,color)=>{
+    ctx.save();ctx.rotate(angle);
+    ctx.beginPath();ctx.moveTo(0,0);ctx.bezierCurveTo(-width, -reach*.25,-width,-reach*.95,0,-reach);ctx.bezierCurveTo(width,-reach*.95,width,-reach*.25,0,0);
+    ctx.fillStyle=tint(color,-.2);ctx.fill();
+    for(let j=-11;j<=11;j++) {
+      const t=j/12,tip=-reach*(.94-.17*Math.abs(t));
+      thread(tint(color,(j%3)*.09),reach*.013,()=>{ctx.moveTo(t*width*.15,-reach*.13);ctx.quadraticCurveTo(t*width,tip*.55,t*width*.28,tip);});
+    }
+    ctx.restore();
+  };
+  const flower=(x,y,r,type,color,angle=0)=>{
+    ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+    if(type==='rosette')rosette(r,color);
+    else if(type==='peony') {
+      for(let ring=0;ring<3;ring++) {
+        const n=ring===0?10:7;
+        for(let j=0;j<n;j++)petal(j/n*Math.PI*2+ring*.48,r*(1-ring*.23)*(1+random()*.12),r*(.37-ring*.06),ring%2?tint(gold,.15):gold);
+      }
+      for(let j=0;j<32;j++){const a=j*2.4,rr=Math.sqrt(j/32)*r*.26;dot(Math.cos(a)*rr,Math.sin(a)*rr,r*.035,j%2?cream:tint(gold,-.45));}
+    } else if(type==='lily') {
+      for(let j=0;j<6;j++)petal(j/6*Math.PI*2,r,r*.18,gold);
+      for(let j=0;j<6;j++){const a=j*Math.PI/3;thread(cream,r*.016,()=>{ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*r*.42,Math.sin(a)*r*.42);});dot(Math.cos(a)*r*.42,Math.sin(a)*r*.42,r*.04,gold);}
+    } else if(type==='bell') {
+      for(let j=-3;j<=3;j++)petal(j*.19,r*(.85+(3-Math.abs(j))*.07),r*.16,color);
+      for(let j=-3;j<=3;j++)dot(Math.sin(j*.23)*r*.77,-Math.cos(j*.23)*r*.9,r*.045,cream);
+      dot(0,0,r*.16,gold);
+    } else {
+      for(let j=0;j<5;j++)petal(j/5*Math.PI*2,r,r*.45,color);
+      dot(0,0,r*.32,tint(p[0],-.55));
+      for(let j=0;j<24;j++){const a=j*2.4,rr=Math.sqrt(j/24)*r*.26;dot(Math.cos(a)*rr,Math.sin(a)*rr,r*.026,cream);}
+    }
+    ctx.restore();
+  };
+  const motif=(x,y,r,index)=>{
+    const type=['peony','rosette','daisy','bell','rosette','lily','daisy'][index%7];
+    const color=[gold,p[1],p[3],p[1],rose,gold,p[3]][index%7];
+    const turn=(random()-.5)*2.4;
+    ctx.save();ctx.translate(x,y);ctx.rotate(turn);
+    for(let j=0;j<3;j++) {
+      const a=j*2.1+.5,xx=Math.cos(a)*r*.75,yy=Math.sin(a)*r*.75;
+      leaf(xx,yy,r*(.38+random()*.15),a+Math.PI/2,j%2?green:tint(green,.28));
+    }
+    sprig(r*.5,-r*.25,r*.65,.65);
+    flower(0,0,r,type,color,random()*.5);
+    if(index%3===0)flower(r*.98,r*.7,r*.42,'daisy',p[3]);
+    ctx.restore();
+  };
+  if(shape==='embroidery-rosette') {
+    rosette(.30,p[1]);
+    for(let i=1;i<count;i++) {
+      const a=i*2.399,r=.13+random()*.025;
+      flower(Math.cos(a)*.46,Math.sin(a)*.46,r,'rosette',i%2?p[3]:p[1]);
+    }
+  } else if(shape==='embroidery-bouquets') {
+    const n=count,cols=Math.max(1,Math.round(Math.sqrt(n*aspect))),rows=Math.ceil(n/cols);
+    for(let i=0;i<n;i++) {
+      const col=i%cols,row=Math.floor(i/cols),r=Math.min(aspect/cols,1/rows)*.23;
+      const x=((col+.5+(row%2?.18:-.18))/cols-.5)*aspect,y=(row+.5)/rows-.5;
+      motif(x,y,r,i%2?0:1);
+      flower(x+r*.85,y+r*.8,r*.54,'daisy',p[3]);
+      flower(x-r*.65,y+r*.95,r*.58,'rosette',rose);
+      sprig(x-r*.7,y-r*.2,r*1.1,-.6);
+    }
+  } else {
+    const dense=shape==='embroidery-carpet',diagonal=shape==='embroidery-diagonal';
+    const n=count*(dense?5:shape==='embroidery-tapestry'?4:3);
+    const cols=Math.max(2,Math.round(Math.sqrt(n*aspect))),rows=Math.ceil(n/cols);
+    const cell=Math.min(aspect/cols,1/rows);
+    for(let i=0;i<n;i++) {
+      const row=Math.floor(i/cols),col=i%cols;
+      let u=(col+.5+(row%2?.24:-.24))/cols,v=(row+.5)/rows;
+      if(diagonal)u=((u+v*.8)%1+1)%1;
+      u+=(random()-.5)*.37/cols;v+=(random()-.5)*.40/rows;
+      const x=(u-.5)*aspect+Math.sin(v*12+seed)*warp*.035,y=v-.5+Math.cos(u*11+seed)*warp*.025;
+      const r=cell*(dense?.60:diagonal?.49:.45)*mix(.75,1.25,random());
+      motif(x,y,r,Math.floor(random()*7));
+      if(!dense&&i%2===0)sprig(x-cell*.37,y+cell*.4,cell*.32,-.6);
+    }
+  }
+  ctx.restore();
+}
+
+// Procedural compositions: each seed regenerates geometry, never samples a source image.
+function renderComposition(ctx,width,height,settings) {
+  if(settings.shape.startsWith("embroidery-"))return renderEmbroidery(ctx,width,height,settings);
+  const {colors:p,shape,count,seed} = settings;
+  const random = rng(seed);
+  const isDefault = seed === settings.preset.seed;
+  const jitter = amount => isDefault ? 0 : (random()-.5)*amount;
+  const aspect = width/height;
+  const scale = mix(.5,1.5,settings.scale/100);
+  const warp = settings.warp/100;
+  const crisp = settings.edge/100;
+  const cx = .5+jitter(.30), cy = .5+jitter(.26);
+  ctx.save();
+  ctx.scale(width,height);
+  ctx.fillStyle = p[0];ctx.fillRect(0,0,1,1);
+  // Rotate and resize the complete composition so that every family shares the controls.
+  ctx.translate(.5,.5);ctx.scale(1,aspect);
+  ctx.rotate(settings.angle*Math.PI/180);
+  ctx.scale(scale,scale);ctx.scale(1,1/aspect);ctx.translate(-.5,-.5);
+  const alpha = (color,a) => color + Math.round(clamp(a,0,1)*255).toString(16).padStart(2,'0');
+  const blob = (x,y,rx,ry,color,opacity=1,solid=0,tilt=0) => {
+    const bend = warp*.045;
+    x += Math.sin(y*13+seed*.01)*bend;
+    y += Math.sin(x*11+seed*.02)*bend;
+    ctx.save();ctx.translate(x,y);ctx.rotate(tilt);ctx.scale(Math.max(.001,rx),Math.max(.001,ry));
+    const g = ctx.createRadialGradient(0,0,0,0,0,1);
+    g.addColorStop(0,alpha(color,opacity));
+    if(solid>0) g.addColorStop(Math.min(.98,solid),alpha(color,opacity));
+    g.addColorStop(1,alpha(color,0));ctx.fillStyle=g;ctx.fillRect(-1,-1,2,2);ctx.restore();
+  };
+  const disc = (x,y,r,color,opacity=1,solid=.9) => blob(x,y,r,r*aspect,color,opacity,solid);
+  const background = (top,bottom) => {
+    const g=ctx.createLinearGradient(0,0,0,1);g.addColorStop(0,top);g.addColorStop(1,bottom);
+    ctx.fillStyle=g;ctx.fillRect(-2,-2,5,5);
+  };
+  const stroke = (points,color,lineWidth) => {
+    ctx.beginPath();ctx.moveTo(...points[0]);
+    for(let i=1;i<points.length;i+=3) ctx.bezierCurveTo(...points[i],...points[i+1],...points[i+2]);
+    ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  };
+  if(shape==='orb') {
+    for(let i=0;i<count;i++) {
+      const x=cx+(i%2 ? .07 : -.04)+jitter(.12), y=.34+i*.22+jitter(.12);
+      disc(x,y,.47,p[i%2 ? 3 : 1],.8,.6+crisp*.2);
+      blob(x+.12,y+.04,.32,.22,p[3],.92);
+      blob(x-.03,y+.15,.40,.23,p[2],.65);
+    }
+  } else if(shape==='halo') {
+    const pearl=settings.preset.source?.includes('15.28.31');
+    const x=pearl ? cx-.26 : cx, y=pearl ? cy-.16 : cy;
+    for(let i=0;i<count;i++) {
+      const ox=x+(i ? Math.sin(i*2.4)*.35 : 0)+jitter(.6),oy=y+(i ? Math.cos(i*2.4)*.3 : 0)+jitter(.6);
+      disc(ox,oy,.60,p[4],.8,0);
+      disc(ox,oy,.46,p[3],.98,.08+crisp*.22);
+      disc(ox,oy,.29,p[2],1,.05);
+      disc(ox-.025,oy-.025,.23,p[1],1,.10+crisp*.16);
+    }
+  } else if(shape==='hourglass') {
+    background(p[0],p[4]);
+    const waist=.53+jitter(.18),neck=.20+warp*.08;
+    ctx.beginPath();ctx.moveTo(cx-.52,-.3);
+    ctx.bezierCurveTo(cx-.43,.1,cx-neck,waist-.18,cx-neck,waist);
+    ctx.bezierCurveTo(cx-neck,waist+.24,cx-.65,1.3,cx-.45,1.3);
+    ctx.lineTo(cx+.5,1.3);
+    ctx.bezierCurveTo(cx+.65,1.15,cx+neck,waist+.2,cx+neck,waist);
+    ctx.bezierCurveTo(cx+neck,waist-.18,cx+.43,.1,cx+.52,-.3);
+    ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,1);g.addColorStop(0,p[0]);g.addColorStop(.25,p[2]);g.addColorStop(.65,p[3]);g.addColorStop(1,p[2]);ctx.fillStyle=g;ctx.fill();
+    for(let i=1;i<count;i++) blob(cx,.82+(i-1)*.2,.49,.22,p[4],.7,.5);
+    blob(cx,.1,.52,.3,p[1],.7);
+  } else if(shape==='mesh') {
+    const spots=[[.21,.28,.61,.43,1],[.70,.30,.55,.49,2],[.52,.75,.68,.43,3],[.18,.65,.46,.45,2],[.45,.45,.40,.30,1]];
+    for(let i=0;i<count;i++) {
+      const a=spots[i%spots.length];blob(a[0]+jitter(.4),a[1]+jitter(.4),a[2],a[3],p[a[4]],.85);
+    }
+  } else if(shape==='ribbons') {
+    const paths=[
+      [[-.2,.14],[.25,.28],[.08,-.24],[.58,-.15],[1.1,-.1],[.33,.44],[.43,.60],[.53,.89],[1.22,.77],[.88,.53],[.73,.37],[.13,.46],[-.2,.50]],
+      [[.65,-.1],[.42,.20],[1.02,.15],[1.18,.08],[.55,.23],[.93,.52],[1.2,.42]],
+      [[-.1,.82],[.17,.89],[.35,.59],[.47,.76],[.61,.91],[.31,1.13],[.69,1.06],[.99,1.01],[1.03,.78],[1.17,.93]]
+    ];
+    for(let i=0;i<count;i++) {
+      const points=paths[i%3].map(([x,y])=>[x+jitter(.10)+Math.sin(y*9+i)*warp*.025,y+jitter(.08)+(i>2?(i-2)*.22:0)]);
+      const w=.085*(.5+crisp*.5);
+      stroke(points,p[1],w);stroke(points.map(([x,y])=>[x+.012,y+.005]),p[2],w*.68);
+      stroke(points.map(([x,y])=>[x+.022,y+.012]),p[3],w*.28);
+    }
+  } else if(shape==='sun') {
+    background(p[0],p[1]);
+    blob(.6,.7,.9,.7,p[2],.5);
+    for(let i=0;i<count;i++) {
+      const x=cx+(i ? Math.sin(i*2.4)*.4 : 0)+jitter(.6),y=.86-(i ? i*.17 : 0)+jitter(.4);
+      disc(x,y,.58,p[3],1,.90+crisp*.08);
+      blob(x+.18,y+.18,.48,.35,p[4],.5);
+    }
+  } else if(shape==='flare') {
+    background(p[1],p[0]);
+    for(let i=0;i<Math.ceil(count/2);i++) blob(-.10+i*.11+jitter(.35),.03+i*.02,.48,.28,p[2],.65);
+    const x=cx+.19,y=cy+.18;
+    // A narrow ring and radial spokes create a lens flare rather than another oval.
+    ctx.save();ctx.translate(x,y);ctx.scale(1,aspect);
+    const ring=ctx.createRadialGradient(0,0,.32,0,0,.48);
+    ring.addColorStop(0,alpha(p[4],0));ring.addColorStop(.45,alpha(p[4],.16));ring.addColorStop(.6,alpha(p[4],.26));ring.addColorStop(1,alpha(p[4],0));
+    ctx.fillStyle=ring;ctx.fillRect(-.5,-.5,1,1);ctx.restore();
+    disc(x,y,.30,p[3],.6,0);
+    for(let i=0;i<count;i++) {
+      const a=i*Math.PI/count+jitter(.4),len=.16+random()*.12;
+      ctx.save();ctx.translate(x,y);ctx.scale(1,aspect);ctx.rotate(a);
+      blob(0,0,len,.008+warp*.01,p[3],.9);ctx.restore();
+    }
+    disc(x,y,.037,p[3],1);disc(x,y,.012,p[2],1,.75);
+  } else if(shape==='sunbow') {
+    background(p[2],p[0]);
+    const horizon=.58+jitter(.14),x=cx+.04;
+    blob(x,horizon,.62,.20,p[3],.8);
+    // Rays widen below the horizon.
+    for(let i=0;i<count;i++) {
+      ctx.beginPath();ctx.moveTo(x,horizon);ctx.lineTo(x-.5+i/count,1.3);ctx.lineTo(x-.45+i/count,1.3);ctx.closePath();ctx.fillStyle=alpha(p[3],.13);ctx.fill();
+    }
+    ctx.save();ctx.translate(x,horizon);ctx.scale(1,aspect);
+    const g=ctx.createRadialGradient(0,0,.42,0,0,.49);
+    g.addColorStop(0,alpha(p[4],0));g.addColorStop(.30,alpha(p[4],.15));g.addColorStop(.45,p[4]);g.addColorStop(.6,p[3]);g.addColorStop(1,alpha(p[2],0));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,.5,Math.PI,Math.PI*2);ctx.lineTo(0,0);ctx.fill();ctx.restore();
+    disc(x,horizon,.09,p[4],1,.92);
+    for(let i=0;i<count*4;i++) {
+      const xx=i/(count*4),yy=horizon+.03+random()*.05;
+      blob(xx,yy,.08+random()*.08,.025+random()*.025,i%3?p[2]:p[1],.85,.25);
+    }
+  } else if(shape==='bokeh') {
+    for(let i=0;i<count;i++) {
+      const x=random()*1.2-.1,y=random()*1.2-.1;
+      const r=.17+random()*.15;
+      blob(x,y,r,r*aspect*(.8+random()),p[1+i%4],.85,.15+crisp*.3);
+      if(i%3===0) for(let j=0;j<4;j++) {
+        const a=j*Math.PI/2;blob(x+Math.cos(a)*r*.7,y+Math.sin(a)*r*.7*aspect,r*.65,r*.65*aspect,p[2],.7,.3);
+      }
+    }
+  } else if(shape==='foliage'||shape==='canopy') {
+    const canopy=shape==='canopy';
+    if(!canopy) {background(p[1],p[0]);blob(.4,.4,.95,.5,p[0],.9);}
+    // Branches carry repeated elliptical leaves; the center stays open in the canopy.
+    for(let i=0;i<count;i++) {
+      const side=i%2?1:-1;
+      const startX=side<0?-.15:1.15, startY=canopy?random()*1.4-.2:.65+random()*.6;
+      const endX=canopy?(side<0?.28:.72)+jitter(.20):random();
+      const endY=canopy?startY+jitter(.35):startY-.18-random()*.30;
+      const color=p[canopy?3+i%2:3];
+      stroke([[startX,startY],[mix(startX,endX,.3),startY],[mix(startX,endX,.7),endY],[endX,endY]],alpha(color,.65),.006+random()*.009);
+      for(let j=0;j<18;j++) {
+        const t=j/18,x=mix(startX,endX,t),y=mix(startY,endY,t);
+        const sway=Math.sin(t*17+i)*warp*.07;
+        for(const sign of [-1,1]) {
+          const lx=x+sign*(.025+random()*.045),ly=y+sign*.025+sway;
+          blob(lx,ly,.025+random()*.045,.009+random()*.018,p[2+(j+i)%3],.7,.4+crisp*.35,sign*.7);
+        }
+      }
+      if(canopy) for(let j=0;j<3;j++) blob(startX+side*-.14+jitter(.45),startY+jitter(.5),.24,.18,p[2+i%3],.8,.1);
+    }
+    if(!canopy) {
+      blob(-.06,1.12,.8,.42,p[4],.95,.45);
+      for(let i=0;i<4;i++) blob(.9,.1+i*.11,.75,.035,p[3],.28,0,.06);
+    }
+  } else if(shape==='water') {
+    background(p[1],p[0]);
+    const rows=20+count*5;
+    for(let i=0;i<rows;i++) {
+      const y=(i+random()*.7)/rows;
+      for(let j=0;j<9;j++) {
+        const x=j/8+jitter(.16),r=.035+random()*.14;
+        const yy=y+Math.sin(x*16+y*22)*warp*.018;
+        blob(x,yy,r,.003+random()*.013,p[i%3===0?2:1],.4+random()*.3,.2,-.04);
+        if(y>.35&&random()<.36) blob(x,yy+.008,r*.30,.002+random()*.004,p[3+i%2],.5+random()*.5,.4,-.08);
+      }
+    }
+  }
+  ctx.restore();
+}
+
+function mixPalette(first,second,amount) {
+  // Blend in linear light to retain luminance when crossing contrasting colors.
+  const linear = value => value <= .04045 ? value/12.92 : ((value+.055)/1.055)**2.4;
+  const srgb = value => value <= .0031308 ? value*12.92 : 1.055*value**(1/2.4)-.055;
+  return first.map((color,i) => "#"+[1,3,5].map(channel => {
+    const a=linear(parseInt(color.slice(channel,channel+2),16)/255);
+    const b=linear(parseInt(second[i].slice(channel,channel+2),16)/255);
+    return Math.round(clamp(srgb(mix(a,b,amount)),0,1)*255).toString(16).padStart(2,"0");
+  }).join(""));
+}
+
+function crossParentSettings(settings) {
+  return {...settings.cross.second,cross:null};
+}
+
+function renderCross(target,width,height,settings) {
+  const {amount,mutation}=settings.cross;
+  const first={...settings,cross:null};
+  const second=crossParentSettings(settings);
+  // Endpoints reproduce each parent exactly; a pure parent keeps its own settings.
+  if(amount<=0) return render(target,width,height,first);
+  if(amount>=1) return render(target,width,height,second);
+  if(!first.image && !second.image) {
+    const palette=mixPalette(first.colors,second.colors,amount);
+    first.colors=mixPalette(first.colors,palette,.65);
+    second.colors=mixPalette(second.colors,palette,.65);
+  }
+  const a=document.createElement("canvas"),b=document.createElement("canvas");
+  render(a,width,height,first);render(b,width,height,second);
+  const af=a.getContext("2d").getImageData(0,0,width,height);
+  const bd=b.getContext("2d").getImageData(0,0,width,height).data;
+  const data=af.data;
+  const phase=rng(settings.cross.seed ^ second.seed)()*Math.PI*2;
+  const aspect=sizes[settings.format][0]/sizes[settings.format][1];
+  const influence=4*amount*(1-amount)*mutation;
+  // A continuous field recombines local silhouettes instead of a uniform opacity overlay.
+  // Coordinates are normalized so the same seed matches preview and full-size PNG.
+  for(let y=0,i=0;y<height;y++) {
+    const v=(y+.5)/height;
+    for(let x=0;x<width;x++,i+=4) {
+      const u=(x+.5)/width*aspect;
+      const wave=(Math.sin(u*11+Math.sin(v*8+phase)*1.4+phase)+
+        Math.sin(v*13-u*7-phase)*.65)/1.65;
+      const t=clamp(amount+wave*influence*.65,0,1);
+      for(let c=0;c<3;c++) data[i+c]=mix(data[i+c],bd[i+c],smooth(t));
+    }
+  }
+  target.width=width;target.height=height;
+  target.getContext("2d",{alpha:false,willReadFrequently:true}).putImageData(af,0,0);
+}
+
+function render(target,width,height,settings) {
+  if(settings.cross) return renderCross(target,width,height,settings);
+  target.width = width;
+  target.height = height;
+  const ctx = target.getContext("2d",{alpha:false,willReadFrequently:true});
+  if(settings.shape==='extracted' && settings.preset.smart) {
+    renderExtracted(ctx,width,height,settings);finishFrame(ctx,ctx.getImageData(0,0,width,height),width,height,settings);return;
+  }
+  if(settings.image) {
+    const {source,crop}=settings.image;
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,width,height);
+    const angle=settings.angle*Math.PI/180;
+    const aspect=width/height;
+    const cover=Math.max(Math.abs(Math.cos(angle))+Math.abs(Math.sin(angle))/aspect,Math.abs(Math.cos(angle))+Math.abs(Math.sin(angle))*aspect);
+    ctx.save();ctx.translate(width/2,height/2);ctx.rotate(angle);
+    const zoom=(1+settings.scale/50)*cover;ctx.scale(zoom,zoom);
+    ctx.drawImage(source,crop.x*source.width,crop.y*source.height,crop.w*source.width,crop.h*source.height,-width/2,-height/2,width,height);
+    ctx.restore();finishFrame(ctx,ctx.getImageData(0,0,width,height),width,height,settings);return;
+  }
+  if (!["organic","round","long","angular"].includes(settings.shape)) {
+    renderComposition(ctx,width,height,settings);
+    const frame = ctx.getImageData(0,0,width,height);
+    finishFrame(ctx,frame,width,height,settings);
+    return;
+  }
+  const frame = ctx.createImageData(width,height);
+  const data = frame.data;
+  const aspect = sizes[settings.format][0]/sizes[settings.format][1];
+  const fields = makeFields(settings,aspect);
+  const table = colorTable(settings.colors,settings.edge);
+  const warp = settings.warp/100 * (settings.shape === "organic" ? .156 : .075);
+  const contrast = mix(.68,1.65,settings.edge/100);
+  const phase = rng(settings.seed ^ 0x9e3779b9)()*Math.PI*2;
+  const angular = settings.shape === "angular";
+  for (let y=0,i=0;y<height;y++) {
+    const v = (y+.5)/height;
+    const shift = Math.sin(v*12+phase) + .31*Math.sin(v*23-phase);
+    for (let x=0;x<width;x++,i+=4) {
+      const u = (x+.5)/width;
+      const px = u*aspect + warp*(shift+.32*Math.sin(v*12+u*7+phase));
+      const py = v + warp*(.72*Math.sin(u*10-v*4-phase)+.29*Math.sin(u*19+v*8));
+      let sum = 0;
+      for (const field of fields) {
+        const dx = px-field.x, dy = py-field.y;
+        const ax = (dx*field.c+dy*field.s)*field.invX;
+        const ay = (dy*field.c-dx*field.s)*field.invY;
+        const distance = angular ? (Math.abs(ax)+Math.abs(ay))**2 : ax*ax+ay*ay;
+        sum += field.strength*Math.exp(-distance*1.7);
+      }
+      const index = Math.round(clamp(.50+.5*Math.tanh(sum*contrast),0,1)*1023)*3;
+      data[i]=table[index]; data[i+1]=table[index+1]; data[i+2]=table[index+2]; data[i+3]=255;
+    }
+  }
+  finishFrame(ctx,frame,width,height,settings);
+}
+
+function finishFrame(ctx,frame,width,height,settings) {
+  const data = frame.data;
+  const radius = Math.round(width*.12*(settings.softness/100)**1.5);
+  if (radius) {
+    const scratch = new Uint8ClampedArray(data.length);
+    boxBlur(data,scratch,width,height,radius,false);
+    boxBlur(scratch,data,width,height,radius,true);
+    boxBlur(data,scratch,width,height,radius,false);
+    boxBlur(scratch,data,width,height,radius,true);
+  }
+  applyGrain(data,width,height,settings);
+  ctx.putImageData(frame,0,0);
+}
+
+const sizes={"4:5":[1080,1350],"9:16":[1080,1920]};
+const byId=id=>document.getElementById(id);
+const canvas=byId("preview");
+const status=byId("status");
+const shapes=[['extracted','Цветовые формы'],['organic','Органические'],['round','Круглые'],['long','Вытянутые'],['angular','Угловатые'],['orb','Светящиеся диски'],['halo','Ореолы'],['hourglass','Песочные часы'],['mesh','Пастельная дымка'],['ribbons','Цветные петли'],['flare','Солнечный блик'],['sun','Солнечный диск'],['sunbow','Радуга и горизонт'],['bokeh','Цветочное боке'],['foliage','Тени листвы'],['canopy','Просветы в кроне'],['water','Водная рябь'],["embroidery-scatter", "Вышивка: Россыпь"],["embroidery-diagonal", "Вышивка: Диагональный сад"],["embroidery-bouquets", "Вышивка: Букеты на бархате"],["embroidery-tapestry", "Вышивка: Цветочный гобелен"],["embroidery-carpet", "Вышивка: Золотой ковёр"],["embroidery-rosette", "Вышивка: Огненная розетка"]];
+const initialKey=randomReadyKey();
+const parents={a:newParent(initialKey),b:newParent(randomReadyKey(initialKey))};
+let pendingFrame=0;
+const uploads={a:null,b:null};
+let currentFormat=byId('format').value;
+let cropSession=null;
+const generationHistory=[];
+const selectControls=new Map();
+let openSelect=null;
+
+function rememberGeneration() {
+  generationHistory.push({parents:structuredClone(parents),format:currentFormat,
+    uploads:Object.fromEntries(Object.entries(uploads).map(([slot,upload])=>[slot,upload ? {...upload,crops:structuredClone(upload.crops)} : null])),
+    cross:byId('cross-enabled').checked,mix:['cross-amount','mutation','mix-seed'].map(id=>byId(id).value)});
+  if(generationHistory.length>50)generationHistory.shift();
+  byId('undo').disabled=false;
+}
+
+function undoGeneration() {
+  const previous=generationHistory.pop();
+  if(!previous)return;
+  closeSelect();
+  Object.assign(parents,previous.parents);Object.assign(uploads,previous.uploads);
+  currentFormat=previous.format;byId('format').value=currentFormat;
+  byId('cross-enabled').checked=previous.cross;
+  ['cross-amount','mutation','mix-seed'].forEach((id,i)=>byId(id).value=previous.mix[i]);
+  byId('undo').disabled=!generationHistory.length;
+  schedule();
+}
+
+function availableOptions(select) {
+  return [...select.options].filter(option=>!option.hidden&&!option.disabled);
+}
+
+function stepPreset(slot,step) {
+  const select=byId(slot+'-preset'),options=availableOptions(select);
+  if(!options.length)return;
+  const index=options.findIndex(option=>option.value===parents[slot].key);
+  setParent(slot,options[(index+step+options.length)%options.length].value);
+}
+
+function closeSelect(restoreFocus=false) {
+  if(!openSelect)return;
+  const {menu,trigger}=openSelect;openSelect=null;
+  menu.remove();trigger.setAttribute('aria-expanded','false');
+  if(restoreFocus)trigger.focus();
+}
+
+function enhanceSelect(select) {
+  const wrapper=document.createElement('div');wrapper.className='select-control';
+  if(select.id==='format')wrapper.classList.add('format-select');
+  select.before(wrapper);wrapper.append(select);select.hidden=true;
+  const trigger=document.createElement('button');trigger.type='button';trigger.className='select-trigger';
+  trigger.id=select.id+'-trigger';trigger.setAttribute('aria-label',select.getAttribute('aria-label'));
+  trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');
+  const label=document.createElement('span');trigger.append(label);wrapper.append(trigger);
+  const sync=()=>{label.textContent=select.selectedOptions[0]?.textContent||'';trigger.title=label.textContent;trigger.disabled=select.disabled;};
+  selectControls.set(select,sync);select.addEventListener('change',sync);sync();
+  function openMenu(last=false) {
+    closeSelect();
+    const menu=document.createElement('div');menu.className='select-menu';menu.id=select.id+'-menu';
+    menu.setAttribute('role','listbox');menu.setAttribute('aria-label',select.getAttribute('aria-label'));
+    trigger.setAttribute('aria-controls',menu.id);trigger.setAttribute('aria-expanded','true');
+    const options=availableOptions(select);
+    for(const option of options) {
+      const item=document.createElement('button');item.type='button';item.className='select-option';item.tabIndex=-1;
+      item.setAttribute('role','option');item.setAttribute('aria-selected',String(option.value===select.value));item.textContent=option.textContent;
+      item.addEventListener('click',()=>{select.value=option.value;closeSelect(true);select.dispatchEvent(new Event('change',{bubbles:true}));});
+      menu.append(item);
+    }
+    (select.closest('dialog')||document.body).append(menu);openSelect={menu,trigger};
+    const rect=trigger.getBoundingClientRect(),below=innerHeight-rect.bottom-12,above=rect.top-12;
+    const down=below>=Math.min(264,menu.scrollHeight)||below>=above;
+    const height=Math.min(264,Math.max(40,down?below:above));
+    const width=Math.min(Math.max(rect.width,190),320,innerWidth-16);
+    menu.style.width=width+'px';menu.style.maxHeight=height+'px';
+    menu.style.left=Math.max(8,Math.min(rect.left,innerWidth-width-8))+'px';
+    if(down)menu.style.top=(rect.bottom+5)+'px';else menu.style.bottom=(innerHeight-rect.top+5)+'px';
+    const items=[...menu.children],selected=items.find(item=>item.getAttribute('aria-selected')==='true');
+    (last?items.at(-1):selected||items[0])?.focus({preventScroll:true});
+    (last?items.at(-1):selected||items[0])?.scrollIntoView({block:'nearest'});
+    menu.addEventListener('keydown',event=>{
+      const index=items.indexOf(document.activeElement);let next;
+      if(event.key==='ArrowDown')next=(index+1)%items.length;
+      if(event.key==='ArrowUp')next=(index-1+items.length)%items.length;
+      if(event.key==='Home')next=0;if(event.key==='End')next=items.length-1;
+      if(next!==undefined){event.preventDefault();items[next]?.focus();}
+      if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeSelect(true);}
+      if(event.key==='Tab')closeSelect(true);
+    });
+  }
+  trigger.addEventListener('click',event=>{event.preventDefault();if(openSelect?.trigger===trigger)closeSelect();else openMenu();});
+  trigger.addEventListener('keydown',event=>{
+    if(select.id.endsWith('-preset')&&['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();stepPreset(select.id[0],event.key==='ArrowLeft'?-1:1);return;}
+    if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();openMenu(event.key==='End');}
+  });
+}
+
+document.addEventListener('pointerdown',event=>{if(openSelect&&!openSelect.menu.contains(event.target)&&!openSelect.trigger.contains(event.target))closeSelect();});
+window.addEventListener('resize',()=>closeSelect());
+document.addEventListener('scroll',event=>{if(openSelect&&!openSelect.menu.contains(event.target))closeSelect();},true);
+document.addEventListener('keydown',event=>{
+  if((event.ctrlKey||event.metaKey)&&!event.shiftKey&&!event.altKey&&event.key.toLowerCase()==='z'&&!event.target.closest('input,textarea,[contenteditable=true]')&&!document.querySelector('dialog[open]')) {
+    if(generationHistory.length){event.preventDefault();undoGeneration();}
+  }
+});
+
+function newParent(key) {
+  const preset=presets[key];
+  return {key,seed:preset.seed,shape:preset.shape,colors:[...preset.colors],...preset.values};
+}
+
+function parentSettings(slot) {
+  const parent=parents[slot];
+  const format=byId('format').value;
+  return {...parent,colors:[...parent.colors],preset:parent.shape==='extracted' && parent.geometry?.smart ? parent.geometry : presets[parent.key] || presets.warm,presetKey:parent.key,format,cross:null,
+    image:parent.key==='custom' ? {source:uploads[slot].source,crop:uploads[slot].crops[format] || centeredCrop(uploads[slot].source,format)} : null};
+}
+
+function getSettings() {
+  const settings=parentSettings('a');
+  if(byId('cross-enabled').checked) settings.cross={
+    key:parents.b.key,second:parentSettings('b'),
+    amount:byId('cross-amount').valueAsNumber/100,
+    mutation:byId('mutation').valueAsNumber/100,
+    seed:byId('mix-seed').valueAsNumber
+  };
+  return settings;
+}
+
+async function setParent(slot,key) {
+  if(key==='custom' && !uploads[slot].crops[byId('format').value]) {
+    const format=byId('format').value,upload=uploads[slot];
+    const crop=await requestCrop(upload.source,format);
+    if(!crop){schedule();return;}
+    upload.crops[format]=crop;
+  }
+  parents[slot]=key==='custom' ? imageParent() : newParent(key);
+  schedule();
+}
+
+function buildPanel(slot) {
+  const letter=slot.toUpperCase();
+  const panel=document.createElement('section');
+  panel.className='parent';panel.dataset.slot=slot;panel.id='parent-'+slot;
+  panel.setAttribute('aria-labelledby',slot+'-title');
+  panel.innerHTML=`<div class="parent-header"><h2 id="${slot}-title">Пресет ${letter}</h2><span class="inactive-note">Не участвует</span><button type="button" class="reset" id="${slot}-reset" title="Вернуть исходные настройки выбранного пресета">Сброс</button></div>
+  <div class="parent-body">
+    <div class="preset-pick"><canvas class="parent-preview" id="${slot}-preview" width="96" height="120" aria-label="Предпросмотр пресета ${letter}"></canvas><div class="preset-info"><div class="preset-navigation"><button type="button" class="preset-step" id="${slot}-previous" aria-label="Предыдущий пресет ${letter}" title="Предыдущий пресет">‹</button><select id="${slot}-preset" aria-label="Выбор пресета ${letter}"></select><button type="button" class="preset-step" id="${slot}-next" aria-label="Следующий пресет ${letter}" title="Следующий пресет">›</button></div><div class="source-actions"><button type="button" class="upload-button" id="${slot}-upload">Загрузить</button><input type="file" id="${slot}-file" accept="image/*" hidden><button type="button" class="upload-button" id="${slot}-smart" title="Упростить изображение до цветовых пятен">Цветовые пятна</button><input type="file" id="${slot}-smart-file" accept="image/*" hidden><button type="button" class="upload-button ai-upload" id="${slot}-ai" hidden title="Извлечь настоящие цвета и контуры изображения">Контуры из фото</button><input type="file" id="${slot}-ai-file" accept="image/*" hidden><button type="button" class="crop-again" id="${slot}-crop" hidden>Обрезать</button><a id="${slot}-reference" class="reference" target="_blank" rel="noopener" aria-label="Открыть референс" title="Открыть референс">↗</a></div></div></div>
+    <div class="palette" id="${slot}-palette" aria-label="Цвета пресета ${letter}"></div>
+    <label class="field">Форма<select id="${slot}-shape" aria-label="Форма пресета ${letter}"></select></label>
+    <div class="sliders" id="${slot}-sliders"></div>
+    <label class="field">Seed ${letter}<input id="${slot}-seed" type="number" min="0" max="4294967295" step="1" aria-label="Seed пресета ${letter}"></label>
+    <div class="random-row"><button id="${slot}-random" type="button" class="random-parent">Рандом ${letter}</button><label class="random-option" title="Менять пресет при рандоме"><input id="${slot}-random-preset" type="checkbox" aria-label="Менять пресет при рандоме ${letter}" checked>Пресет</label><label class="random-option" title="Менять форму при рандоме; снимите, чтобы зафиксировать"><input id="${slot}-random-shape" type="checkbox" aria-label="Менять форму при рандоме ${letter}" checked>Форма</label><label class="random-option" title="Менять цвета при рандоме"><input id="${slot}-random-colors" type="checkbox" aria-label="Менять цвета при рандоме ${letter}" checked>Цвета</label></div>
+    <div class="preset-storage"><div class="preset-files"><button id="${slot}-keep-preset" type="button" title="Запомнить текущий пресет и ваши настройки в этом браузере">Запомнить в браузере</button><button id="${slot}-export-preset" type="button" title="Скачать отдельный файл с настройками пресета">Скачать настройки</button><button id="${slot}-import-preset" type="button">Открыть настройки</button><input id="${slot}-preset-file" type="file" accept=".json,application/json" hidden></div><p class="preset-storage-note">Только для пресетов из цветовых пятен.</p></div>
+  </div>`;
+  if(slot==='b') {
+    const wrapper=document.createElement('div');wrapper.className='parent-slot-b';wrapper.id='parent-b-slot';wrapper.append(panel);byId('parents').append(wrapper);
+  } else byId('parents').append(panel);
+  const storage=panel.querySelector('.preset-storage');
+  storage.dataset.slot=slot;
+  const storageTitle=document.createElement('span');storageTitle.className='storage-title';storageTitle.textContent='Пресет '+letter;storage.prepend(storageTitle);
+  byId('preset-storage-area').append(storage);
+  for(const [key,preset] of Object.entries(presets)) {
+    const option=document.createElement('option');option.value=key;option.textContent=preset.name;byId(slot+'-preset').append(option);
+  }
+  const imageOption=document.createElement('option');imageOption.value='image';imageOption.textContent='Изображение';imageOption.disabled=true;byId(slot+'-shape').append(imageOption);
+  const customOption=document.createElement('option');customOption.value='custom';customOption.textContent='Свое изображение';customOption.hidden=true;customOption.disabled=true;byId(slot+'-preset').append(customOption);
+  byId(slot+'-upload').addEventListener('click',()=>byId(slot+'-file').click());
+  byId(slot+'-file').addEventListener('change',()=>loadUpload(slot));
+  byId(slot+'-ai').addEventListener('click',()=>byId(slot+'-ai-file').click());
+  byId(slot+'-ai-file').addEventListener('change',()=>loadInspiredImport(slot));
+  byId(slot+'-export-preset').addEventListener('click',()=>exportPresetFile(slot));
+  byId(slot+'-keep-preset').addEventListener('click',()=>saveCurrentPreset(slot));
+  byId(slot+'-import-preset').addEventListener('click',()=>byId(slot+'-preset-file').click());
+  byId(slot+'-preset-file').addEventListener('change',()=>importPresetFile(slot));
+  byId(slot+'-smart').addEventListener('click',()=>byId(slot+'-smart-file').click());
+  byId(slot+'-smart-file').addEventListener('change',()=>loadSmartImport(slot));
+  byId(slot+'-crop').addEventListener('click',async()=>{
+    const upload=uploads[slot],format=byId('format').value;
+    const crop=await requestCrop(upload.source,format,upload.crops[format]);
+    if(crop && uploads[slot]===upload){upload.crops[format]=crop;schedule();}
+  });
+  for(const [value,label] of shapes) {
+    const option=document.createElement('option');option.value=value;option.textContent=label;byId(slot+'-shape').append(option);
+  }
+  for(let i=0;i<5;i++) {
+    const input=document.createElement('input');input.type='color';input.id=slot+'-color-'+i;
+    input.setAttribute('aria-label',`Цвет ${i+1} пресета ${letter}`);
+    input.addEventListener('input',()=>{parents[slot].colors[i]=input.value;schedule();});
+    byId(slot+'-palette').append(input);
+  }
+  const colorRandom=document.createElement('button');colorRandom.type='button';colorRandom.id=slot+'-palette-random';colorRandom.className='palette-random';colorRandom.textContent='↻';colorRandom.title='Случайная палитра';colorRandom.setAttribute('aria-label','Случайная палитра '+letter);colorRandom.addEventListener('click',()=>randomizePalette(slot));byId(slot+'-palette').append(colorRandom);
+  for(const [key,label,min,max,unit] of controls) {
+    const wrapper=document.createElement('label');wrapper.className='range';
+    const text=document.createElement('span');text.textContent=label;
+    const output=document.createElement('output');output.id=slot+'-'+key+'-label';output.htmlFor=slot+'-'+key;
+    const input=document.createElement('input');Object.assign(input,{type:'range',min,max,step:1,id:slot+'-'+key});
+    input.setAttribute('aria-label',label+' пресета '+letter);
+    input.addEventListener('input',()=>{parents[slot][key]=input.valueAsNumber;schedule();});
+    wrapper.append(text,output,input);byId(slot+'-sliders').append(wrapper);
+  }
+  for(const [direction,step] of [['previous',-1],['next',1]])byId(slot+'-'+direction).addEventListener('click',()=>stepPreset(slot,step));
+  byId(slot+'-preset').addEventListener('change',event=>setParent(slot,event.target.value));
+  byId(slot+'-shape').addEventListener('change',event=>{parents[slot].shape=event.target.value;schedule();});
+  byId(slot+'-seed').addEventListener('change',event=>{
+    if(event.target.validity.valid && Number.isInteger(event.target.valueAsNumber)) {
+      parents[slot].seed=event.target.valueAsNumber;schedule();
+    } else event.target.value=parents[slot].seed;
+  });
+  byId(slot+'-reset').addEventListener('click',()=>setParent(slot,parents[slot].key));
+  byId(slot+'-random').addEventListener('click',()=>randomizeParent(slot));
+}
+
+function syncPanel(slot) {
+  const parent=parents[slot],isImage=parent.key==='custom',preset=presets[parent.key] || {};
+  const option=byId(slot+'-preset').querySelector('[value="custom"]');
+  option.hidden=!uploads[slot];option.disabled=!uploads[slot];
+  if(uploads[slot]) option.textContent=uploads[slot].name;
+  byId(slot+'-preset').value=parent.key;
+  byId(slot+'-shape').disabled=isImage;
+  byId(slot+'-palette').classList.toggle('image-control-disabled',isImage);
+  for(const input of byId(slot+'-palette').querySelectorAll('input')) input.disabled=isImage;
+  for(const key of ['count','warp','edge']) {
+    byId(slot+'-'+key).disabled=isImage;
+    byId(slot+'-'+key).closest('label').classList.toggle('image-control-disabled',isImage);
+  }
+  byId(slot+'-crop').hidden=!isImage;
+  byId(slot+'-palette-random').disabled=isImage;
+  byId(slot+'-random-shape').disabled=isImage;
+  byId(slot+'-shape').querySelector('[value=extracted]').disabled=!(preset.smart||parent.geometry?.smart);
+  byId(slot+'-shape').value=parent.shape;
+  byId(slot+'-export-preset').disabled=!(parent.shape==='extracted'&&parentSettings(slot).preset.smart);
+  byId(slot+'-keep-preset').disabled=byId(slot+'-export-preset').disabled;
+  byId(slot+'-keep-preset').textContent='Запомнить в браузере';
+  byId(slot+'-count').closest('label').querySelector('span').textContent=parentSettings(slot).preset.trace?'Детализация':'Число форм';
+  byId(slot+'-edge').closest('label').querySelector('span').textContent=parentSettings(slot).preset.trace?'Точность контуров':'Резкость';
+  byId(slot+'-seed').value=parent.seed;
+  parent.colors.forEach((color,i)=>byId(slot+'-color-'+i).value=color);
+  for(const [key,,,,unit] of controls) {
+    byId(slot+'-'+key).value=parent[key];byId(slot+'-'+key+'-label').value=isImage && key==='scale' ? (100+parent.scale*2)+'%' : parent[key]+unit;
+  }
+  const reference=byId(slot+'-reference');
+  reference.hidden=!preset.source;
+  if(preset.source) reference.href=(preset.sourceFolder||'референсы')+'/'+encodeURIComponent(preset.source);
+  else reference.removeAttribute('href');
+}
+
+function updateParentLayout() {
+  const parentsNode=byId('parents'),panel=byId('parent-b');
+  if(!parentsNode || !panel)return;
+  const gap=parseFloat(getComputedStyle(parentsNode).getPropertyValue('--parent-gap'))||12;
+  const width=matchMedia('(max-width:519px)').matches?parentsNode.clientWidth:(parentsNode.clientWidth-gap)/2;
+  parentsNode.style.setProperty('--b-panel-width',Math.max(0,width)+'px');
+  parentsNode.style.setProperty('--b-panel-height',panel.offsetHeight+'px');
+}
+
+let displayedCrossMode=null;
+let layoutTransition=null;
+let layoutVersion=0;
+let fallbackAnimations=[];
+let fallbackGhosts=[];
+
+function applyCrossLayout(enabled) {
+  const wrapper=byId('parent-b-slot');
+  if(!enabled && wrapper.contains(document.activeElement))byId('cross-enabled').focus();
+  wrapper.inert=!enabled;wrapper.setAttribute('aria-hidden',String(!enabled));
+  byId('mix-values').inert=!enabled;
+  document.body.classList.toggle('single-mode',!enabled);
+  updateParentLayout();
+}
+
+function clearFallbackMotion() {
+  for(const animation of fallbackAnimations)animation.cancel();fallbackAnimations=[];
+  for(const ghost of fallbackGhosts)ghost.remove();fallbackGhosts=[];
+}
+
+function fallbackLayoutTransition(enabled) {
+  const elements=[byId('parent-a'),document.querySelector('.mix-panel'),document.querySelector('.bench-footer')];
+  const before=elements.map(element=>element.getBoundingClientRect());
+  const b=byId('parent-b'),oldB=b.getBoundingClientRect();
+  const ghost=!enabled?b.cloneNode(true):null;
+  if(ghost){
+    ghost.removeAttribute('id');ghost.querySelectorAll('[id]').forEach(node=>node.removeAttribute('id'));
+    ghost.setAttribute('aria-hidden','true');ghost.inert=true;
+    const originals=b.querySelectorAll('canvas');ghost.querySelectorAll('canvas').forEach((c,i)=>c.getContext('2d').drawImage(originals[i],0,0));
+  }
+  clearFallbackMotion();applyCrossLayout(enabled);
+  const options={duration:340,easing:'cubic-bezier(.2,.7,.2,1)'};
+  elements.forEach((element,i)=>{
+    const after=element.getBoundingClientRect(),old=before[i];
+    const transform=`translate(${old.left-after.left}px,${old.top-after.top}px) scale(${old.width/after.width},${old.height/after.height})`;
+    fallbackAnimations.push(element.animate([{transform,transformOrigin:'top left'},{transform:'none',transformOrigin:'top left'}],options));
+  });
+  const offset=matchMedia('(max-width:519px)').matches?'translateY(12px)':'translateX(16px)';
+  if(enabled)fallbackAnimations.push(b.animate([{opacity:0,transform:offset},{opacity:1,transform:'none'}],{...options,duration:280}));
+  else {
+    Object.assign(ghost.style,{position:'fixed',left:oldB.left+'px',top:oldB.top+'px',width:oldB.width+'px',height:oldB.height+'px',margin:'0',pointerEvents:'none',zIndex:'20',viewTransitionName:'none'});
+    document.body.append(ghost);fallbackGhosts.push(ghost);
+    fallbackAnimations.push(ghost.animate([{opacity:1,transform:'none'},{opacity:0,transform:offset}],{...options,duration:180,fill:'forwards'}));
+  }
+  const animations=[...fallbackAnimations];
+  return {finished:Promise.all(animations.map(a=>a.finished.catch(()=>{}))),skipTransition:clearFallbackMotion};
+}
+
+function setCrossLayout(enabled) {
+  if(displayedCrossMode===enabled)return;
+  const first=displayedCrossMode===null;displayedCrossMode=enabled;
+  const version=++layoutVersion;
+  layoutTransition?.skipTransition();
+  if(first || matchMedia('(prefers-reduced-motion:reduce)').matches) {
+    layoutTransition=null;clearFallbackMotion();applyCrossLayout(enabled);return;
+  }
+  cancelAnimationFrame(pendingFrame);
+  const transition=typeof document.startViewTransition==='function'
+    ? document.startViewTransition(()=>{if(version===layoutVersion)applyCrossLayout(enabled);})
+    : fallbackLayoutTransition(enabled);
+  layoutTransition=transition;
+  transition.ready?.catch(()=>{});
+  // Rendering is intentionally deferred: CPU canvas work must not block animation frames.
+  transition.finished.catch(()=>{}).then(()=>{
+    if(layoutTransition!==transition)return;
+    layoutTransition=null;clearFallbackMotion();
+    requestAnimationFrame(queuePreviewRender);
+  });
+}
+
+function queuePreviewRender() {
+  cancelAnimationFrame(pendingFrame);
+  if(layoutTransition)return;
+  pendingFrame=requestAnimationFrame(()=>{
+    if(layoutTransition)return;
+    const settings=getSettings(),[w,h]=sizes[settings.format];
+    render(canvas,384,Math.round(384*h/w),settings);
+    render(byId('a-preview'),96,Math.round(96*h/w),parentSettings('a'));
+    render(byId('b-preview'),96,Math.round(96*h/w),parentSettings('b'));
+    status.textContent='';
+  });
+}
+
+function schedule() {
+  syncPanel('a');syncPanel('b');
+  for(const sync of selectControls.values())sync();
+  const enabled=byId('cross-enabled').checked;
+  for(const id of ['cross-amount','mutation','mix-seed'])byId(id).disabled=!enabled;
+  byId('mix-values').setAttribute('aria-disabled',String(!enabled));
+  byId('cross-amount-label').value=byId('cross-amount').value+'%';
+  byId('mutation-label').value=byId('mutation').value+'%';
+  setCrossLayout(enabled);
+  queuePreviewRender();
+}
+
+function freshSeed() {
+  const seeds=new Uint32Array(1);crypto.getRandomValues(seeds);return seeds[0];
+}
+
+function randomReadyKey(excludedKey) {
+  const keys=Object.keys(presets).filter(key=>!presets[key].smart&&key!==excludedKey);
+  return keys[Math.floor(freshSeed()/4294967296*keys.length)];
+}
+
+function assignRandomShape(parent,random=rng(freshSeed())) {
+  if(parent.key==='custom')return;
+  const native=presets[parent.key].shape;
+  // Keep the native combination sometimes; otherwise borrow another silhouette.
+  if(random()<.4){parent.shape=native;return;}
+  const choices=shapes.map(([value])=>value).filter(value=>value!==native && (value!=='extracted'||presets[parent.key].smart||parent.geometry?.smart));
+  parent.shape=choices[Math.floor(random()*choices.length)];
+}
+
+function shuffledPalette(colors,random=rng(freshSeed())) {
+  return colors.map(color=>'#'+[1,3,5].map(index=>clamp(Math.round(parseInt(color.slice(index,index+2),16)+(random()-.5)*64),0,255).toString(16).padStart(2,'0')).join(''));
+}
+
+function randomizePalette(slot) {
+  if(parents[slot].key==='custom')return;
+  rememberGeneration();
+  const random=rng(freshSeed()),palettes=Object.values(presets);
+  parents[slot].colors=shuffledPalette(palettes[Math.floor(random()*palettes.length)].colors,random);
+  schedule();
+}
+
+function randomParent(excludedKey,fixedKey) {
+  const random=rng(freshSeed());
+  const keys=Object.keys(presets).filter(key=>key!==excludedKey);
+  const key=fixedKey || keys[Math.floor(random()*keys.length)];
+  const parent=key==='custom' ? imageParent() : newParent(key);
+  parent.seed=freshSeed();
+  // Keep the chosen family's silhouette, with a wide useful range for every control.
+  for(const [id,,min,max] of controls) {
+    if(key==='custom' && ['count','warp','edge'].includes(id))continue;
+    const spread=id==='angle'?100:id==='count'?4:id==='grain'?23:35;
+    parent[id]=Math.round(clamp(parent[id]+(random()-.5)*spread*2,min,max));
+  }
+  parent.colors=parent.colors.map(color=>'#'+[1,3,5].map(index=>
+    clamp(Math.round(parseInt(color.slice(index,index+2),16)+(random()-.5)*64),0,255).toString(16).padStart(2,'0')
+  ).join(''));
+  return parent;
+}
+
+function randomizeParent(slot) {
+  rememberGeneration();
+  const before=parents[slot];
+  const next=randomParent(before.key,byId(slot+'-random-preset').checked ? null : before.key);
+  if(!byId(slot+'-random-colors').checked)next.colors=[...before.colors];
+  if(next.key!=='custom') {
+    if(before.geometry?.smart)next.geometry=before.geometry;
+    if(byId(slot+'-random-shape').checked)assignRandomShape(next);
+    else if(before.shape!=='image') {
+      next.shape=before.shape;
+      if(before.shape==='extracted')next.geometry=before.geometry || presets[before.key];
+    }
+  }
+  parents[slot]=next;
+  schedule();
+}
+
+function fullRandom() {
+  rememberGeneration();
+  parents.a=randomParent(parents.a.key);
+  parents.b=randomParent(parents.a.key);
+  const random=rng(freshSeed());
+  if(byId('full-random-shapes').checked){assignRandomShape(parents.a,random);assignRandomShape(parents.b,random);}
+  byId('cross-enabled').checked=true;
+  byId('cross-amount').value=20+Math.floor(random()*61);
+  byId('mutation').value=15+Math.floor(random()*86);
+  byId('mix-seed').value=freshSeed();
+  schedule();
+}
+
+async function save() {
+  const button=byId('save'),settings=getSettings();
+  const [width,height]=sizes[settings.format];
+  button.disabled=true;status.textContent='Готовлю PNG…';
+  try {
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    const output=document.createElement('canvas');render(output,width,height,settings);
+    const blob=await new Promise(resolve=>output.toBlob(resolve,'image/png'));
+    if(!blob) throw new Error('PNG encoding failed');
+    const url=URL.createObjectURL(blob),link=document.createElement('a');
+    const cross=settings.cross;
+    link.href=url;
+    link.download='gradient-'+settings.presetKey+'-'+settings.seed+(cross?'-x-'+cross.second.presetKey+'-'+cross.second.seed+'-mix'+Math.round(cross.amount*100)+'-mut'+Math.round(cross.mutation*100)+'-'+cross.seed:'')+'.png';
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);status.textContent='PNG передан браузеру';
+  } catch(error) {
+    console.error(error);status.textContent='Не удалось создать PNG';
+  } finally {button.disabled=false;}
+}
+
+function imageParent() {
+  return {...newParent('warm'),key:'custom',shape:'image',seed:freshSeed(),scale:0,angle:0,softness:0,grain:0,texture:20};
+}
+
+function centeredCrop(source,format) {
+  const [w,h]=sizes[format],aspect=w/h;
+  const cw=Math.min(source.width,source.height*aspect),ch=cw/aspect;
+  return {x:(source.width-cw)/2/source.width,y:(source.height-ch)/2/source.height,w:cw/source.width,h:ch/source.height};
+}
+
+// FileReader + HTMLImageElement also works in browser webviews without createImageBitmap.
+function decodeUpload(file) {
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error('Не удалось прочитать файл. Сохраните его на компьютер и выберите снова.'));
+    reader.onabort=()=>reject(new Error('Чтение файла прервано.'));
+    reader.onload=()=>{
+      const image=new Image();
+      image.onload=()=>{
+        if(!image.naturalWidth || !image.naturalHeight)reject(new Error('У изображения нет размеров.'));
+        else resolve(image);
+      };
+      image.onerror=()=>{
+        const format=file.name.split('.').pop().toUpperCase();
+        reject(new Error('Браузер не смог прочитать '+format+'. Попробуйте сохранить картинку в PNG или JPG.'));
+      };
+      image.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function loadUpload(slot) {
+  const input=byId(slot+'-file'),file=input.files[0];
+  if(!file)return;
+  const button=byId(slot+'-upload');button.disabled=true;status.textContent='';
+  let stage='read';
+  try {
+    const image=await decodeUpload(file);
+    const source=document.createElement('canvas'),ratio=Math.min(1,4096/Math.max(image.naturalWidth,image.naturalHeight));
+    source.width=Math.max(1,Math.round(image.naturalWidth*ratio));source.height=Math.max(1,Math.round(image.naturalHeight*ratio));
+    const ctx=source.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,source.width,source.height);ctx.drawImage(image,0,0,source.width,source.height);
+    const format=byId('format').value,[w,h]=sizes[format];
+    const matches=image.naturalWidth*h===image.naturalHeight*w;
+    stage='crop';
+    const crop=matches ? {x:0,y:0,w:1,h:1} : await requestCrop(source,format);
+    if(!crop)return;
+    stage='apply';
+    uploads[slot]={source,name:file.name,crops:{[format]:crop}};
+    parents[slot]=imageParent();schedule();
+  } catch(error) {
+    console.error('Image upload failed at '+stage,error);
+    status.textContent=stage==='read' ? error.message : 'Не удалось применить изображение: '+error.message;
+  } finally {input.value='';button.disabled=false;}
+}
+
+function requestCrop(source,format,previous) {
+  if(cropSession)return Promise.resolve(null);
+  return new Promise(resolve=>{
+    const base=centeredCrop(source,format);
+    cropSession={source,format,cx:previous ? previous.x+previous.w/2 : .5,cy:previous ? previous.y+previous.h/2 : .5,
+      zoom:previous ? clamp(base.w/previous.w,1,4) : 1,resolve};
+    byId('crop-title').textContent='Обрезка · '+format;
+    byId('crop-zoom').value=cropSession.zoom;
+    const view=byId('crop-view'),[w,h]=sizes[format];view.width=480;view.height=Math.round(480*h/w);
+    drawCrop();byId('crop-dialog').showModal();fitCrop();view.focus();
+  });
+}
+
+function fitCrop() {
+  if(!cropSession)return;
+  const [w,h]=sizes[cropSession.format],aspect=w/h;
+  const height=Math.min(innerHeight*.58,480,(byId('crop-dialog').clientWidth-32)/aspect);
+  byId('crop-view').style.width=(height*aspect)+'px';byId('crop-view').style.height=height+'px';
+}
+window.addEventListener('resize',fitCrop);
+
+function cropRect() {
+  const s=cropSession,base=centeredCrop(s.source,s.format),w=base.w/s.zoom,h=base.h/s.zoom;
+  s.cx=clamp(s.cx,w/2,1-w/2);s.cy=clamp(s.cy,h/2,1-h/2);
+  return {x:s.cx-w/2,y:s.cy-h/2,w,h};
+}
+
+function drawCrop() {
+  if(!cropSession)return;
+  const view=byId('crop-view'),ctx=view.getContext('2d'),s=cropSession.source,crop=cropRect();
+  ctx.drawImage(s,crop.x*s.width,crop.y*s.height,crop.w*s.width,crop.h*s.height,0,0,view.width,view.height);
+  ctx.strokeStyle='#ffffff70';ctx.lineWidth=1;
+  ctx.beginPath();for(let i=1;i<3;i++){ctx.moveTo(view.width*i/3,0);ctx.lineTo(view.width*i/3,view.height);ctx.moveTo(0,view.height*i/3);ctx.lineTo(view.width,view.height*i/3);}ctx.stroke();
+  byId('crop-zoom-label').value=Math.round(cropSession.zoom*100)+'%';
+}
+
+function finishCrop(apply) {
+  if(!cropSession)return;
+  const result=apply ? cropRect() : null,resolve=cropSession.resolve;
+  cropSession=null;byId('crop-dialog').close();resolve(result);
+}
+
+async function changeFormat() {
+  const next=byId('format').value,previous=currentFormat,changes=[];
+  for(const slot of ['a','b']) {
+    if(parents[slot].key!=='custom' || uploads[slot].crops[next])continue;
+    const upload=uploads[slot],crop=await requestCrop(upload.source,next);
+    if(!crop){byId('format').value=previous;schedule();return;}
+    changes.push([upload,crop]);
+  }
+  for(const [upload,crop] of changes)upload.crops[next]=crop;
+  currentFormat=next;schedule();
+}
+
+byId('crop-apply').addEventListener('click',()=>finishCrop(true));
+byId('crop-cancel').addEventListener('click',()=>finishCrop(false));
+byId('crop-dialog').addEventListener('cancel',event=>{event.preventDefault();finishCrop(false);});
+byId('crop-dialog').addEventListener('close',()=>{if(!byId('crop-dialog').open && cropSession)finishCrop(false);});
+byId('crop-reset').addEventListener('click',()=>{if(cropSession){Object.assign(cropSession,{cx:.5,cy:.5,zoom:1});byId('crop-zoom').value=1;drawCrop();}});
+byId('crop-zoom').addEventListener('input',event=>{if(cropSession){cropSession.zoom=event.target.valueAsNumber;drawCrop();}});
+let cropPointer=null;
+byId('crop-view').addEventListener('pointerdown',event=>{
+  if(!cropSession)return;event.currentTarget.setPointerCapture(event.pointerId);cropPointer={id:event.pointerId,x:event.clientX,y:event.clientY};
+});
+byId('crop-view').addEventListener('pointermove',event=>{
+  if(!cropSession || !cropPointer || cropPointer.id!==event.pointerId)return;
+  const bounds=event.currentTarget.getBoundingClientRect(),crop=cropRect();
+  cropSession.cx-=(event.clientX-cropPointer.x)/bounds.width*crop.w;cropSession.cy-=(event.clientY-cropPointer.y)/bounds.height*crop.h;
+  cropPointer.x=event.clientX;cropPointer.y=event.clientY;drawCrop();
+});
+for(const type of ['pointerup','pointercancel','lostpointercapture'])byId('crop-view').addEventListener(type,()=>cropPointer=null);
+byId('crop-view').addEventListener('keydown',event=>{
+  if(!cropSession)return;
+  const directions={ArrowLeft:[-.02,0],ArrowRight:[.02,0],ArrowUp:[0,-.02],ArrowDown:[0,.02]},d=directions[event.key];
+  if(d){event.preventDefault();const crop=cropRect();cropSession.cx+=d[0]*crop.w;cropSession.cy+=d[1]*crop.h;drawCrop();}
+});
+byId('crop-view').addEventListener('wheel',event=>{
+  if(!cropSession)return;event.preventDefault();cropSession.zoom=clamp(cropSession.zoom*Math.exp(-event.deltaY*.001),1,4);byId('crop-zoom').value=cropSession.zoom;drawCrop();
+},{passive:false});
+
+// A pure, deterministic analyzer; the worker receives only a small pixel buffer.
+function analyzeReference({pixels,width,height}) {
+  const lab=(r,g,b)=>{
+    const linear=x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4};
+    r=linear(r);g=linear(g);b=linear(b);
+    const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+    return [.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s];
+  };
+  const n=width*height,rgb=new Float32Array(n*3),features=new Float32Array(n*3);
+  let seed=2166136261,detail=0;
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++) {
+    const i=y*width+x,c=[0,0,0];let samples=0;
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++) {
+      const xx=Math.max(0,Math.min(width-1,x+dx)),yy=Math.max(0,Math.min(height-1,y+dy));samples++;
+      for(let k=0;k<3;k++)c[k]+=pixels[(yy*width+xx)*4+k];
+    }
+    for(let k=0;k<3;k++){c[k]/=samples;rgb[i*3+k]=c[k];detail+=Math.abs(pixels[i*4+k]-c[k]);}
+    features.set(lab(...c),i*3);seed=Math.imul(seed^pixels[i*4],16777619)>>>0;
+  }
+  const distance=(i,c)=>(features[i*3]-c[0])**2+(features[i*3+1]-c[1])**2+(features[i*3+2]-c[2])**2;
+  const centers=[Array.from(features.slice(Math.floor(n/2)*3,Math.floor(n/2)*3+3))];
+  for(let k=1;k<5;k++) {
+    let best=-1,index=0;
+    for(let i=0;i<n;i++){const d=Math.min(...centers.map(c=>distance(i,c)));if(d>best){best=d;index=i;}}
+    centers.push(Array.from(features.slice(index*3,index*3+3)));
+  }
+  let labels=new Uint8Array(n);const populations=new Uint32Array(5);
+  for(let pass=0;pass<12;pass++) {
+    const sums=Array.from({length:5},()=>[0,0,0]);populations.fill(0);
+    for(let i=0;i<n;i++) {
+      let label=0,best=Infinity;
+      for(let k=0;k<5;k++){const d=distance(i,centers[k]);if(d<best){best=d;label=k;}}
+      labels[i]=label;populations[label]++;for(let c=0;c<3;c++)sums[label][c]+=features[i*3+c];
+    }
+    for(let k=0;k<5;k++)if(populations[k])for(let c=0;c<3;c++)centers[k][c]=sums[k][c]/populations[k];
+  }
+  const sums=Array.from({length:5},()=>[0,0,0]);
+  for(let i=0;i<n;i++)for(let c=0;c<3;c++)sums[labels[i]][c]+=rgb[i*3+c];
+  const colors=sums.map((c,k)=>'#'+c.map((v,index)=>Math.round(populations[k]?v/populations[k]:rgb[index]).toString(16).padStart(2,'0')).join(''));
+  for(let pass=0;pass<2;pass++) {
+    const next=labels.slice();
+    for(let y=1;y<height-1;y++)for(let x=1;x<width-1;x++) {
+      const votes=[0,0,0,0,0];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)votes[labels[(y+dy)*width+x+dx]]++;
+      let winner=labels[y*width+x];for(let k=0;k<5;k++)if(votes[k]>votes[winner])winner=k;next[y*width+x]=winner;
+    }
+    labels=next;
+  }
+  const edges=[0,0,0,0,0];for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(x<3||y<3||x>=width-3||y>=height-3)edges[labels[y*width+x]]++;
+  const background=edges.indexOf(Math.max(...edges));
+  const seen=new Uint8Array(n),queue=new Int32Array(n),components=[],aspect=width/height;
+  for(let start=0;start<n;start++) {
+    if(seen[start])continue;
+    const color=labels[start];let head=0,tail=1,area=0,sx=0,sy=0,sxx=0,syy=0,sxy=0;queue[0]=start;seen[start]=1;
+    while(head<tail) {
+      const i=queue[head++],x=i%width,y=Math.floor(i/width),px=(x+.5)/width*aspect,py=(y+.5)/height;
+      area++;sx+=px;sy+=py;sxx+=px*px;syy+=py*py;sxy+=px*py;
+      const neighbors=[];if(x)neighbors.push(i-1);if(x<width-1)neighbors.push(i+1);if(y)neighbors.push(i-width);if(y<height-1)neighbors.push(i+width);
+      for(const j of neighbors)if(!seen[j]&&labels[j]===color){seen[j]=1;queue[tail++]=j;}
+    }
+    if(color===background||area<n*.004)continue;
+    const x=sx/area,y=sy/area,vx=Math.max(0,sxx/area-x*x),vy=Math.max(0,syy/area-y*y),cov=sxy/area-x*y;
+    const discriminant=Math.sqrt((vx-vy)**2+4*cov*cov),major=Math.max(.0001,(vx+vy+discriminant)/2),minor=Math.max(.00006,(vx+vy-discriminant)/2);
+    if(area/n < Math.PI*(2.2*Math.sqrt(major))*(2.2*Math.sqrt(minor))/aspect*.18)continue;
+    components.push({x:x/aspect,y,rx:Math.min(1.2,2.2*Math.sqrt(major)),ry:Math.min(.9,2.2*Math.sqrt(minor)),tilt:.5*Math.atan2(2*cov,vx-vy),color,area:area/n});
+  }
+  components.sort((a,b)=>b.area-a.area);
+  const blobs=components.slice(0,12);
+  if(!blobs.length)blobs.push({x:.5,y:.5,rx:.35,ry:.3,tilt:0,color:background,area:1});
+  return {colors,background,blobs,seed:seed>>>0,grain:Math.min(28,Math.round(detail/(n*3)*1.1))};
+}
+
+async function analyzeInBrowser(imageData) {
+  const payload={pixels:imageData.data,width:imageData.width,height:imageData.height};
+  if(typeof Worker==='undefined')return analyzeReference(payload);
+  const url=URL.createObjectURL(new Blob(['self.onmessage=e=>{try{self.postMessage({result:('+analyzeReference.toString()+')(e.data)})}catch(error){self.postMessage({error:error.message})}}'],{type:'text/javascript'}));
+  let worker;
+  try {
+    worker=new Worker(url);
+    return await new Promise((resolve,reject)=>{
+      worker.onmessage=event=>event.data.error?reject(new Error(event.data.error)):resolve(event.data.result);
+      worker.onerror=()=>reject(new Error('Не удалось проанализировать изображение'));
+      worker.postMessage(payload);
+    });
+  } catch(error) {
+    // A small analysis still works in webviews that prohibit blob workers.
+    return analyzeReference(payload);
+  } finally {worker?.terminate();URL.revokeObjectURL(url);}
+}
+
+function renderExtracted(ctx,width,height,settings) {
+  if(settings.preset.trace)return renderTraced(ctx,width,height,settings);
+  if(settings.preset.recipe)return renderInspired(ctx,width,height,settings);
+  const {preset,colors}=settings,aspect=width/height,random=rng(settings.seed);
+  const variant=settings.seed!==preset.seed,size=mix(.45,1.55,settings.scale/100),angle=settings.angle*Math.PI/180;
+  ctx.fillStyle=colors[preset.background];ctx.fillRect(0,0,width,height);
+  ctx.save();ctx.translate(width/2,height/2);ctx.rotate(angle);ctx.scale(size,size);ctx.translate(-width/2,-height/2);
+  for(let i=0;i<settings.count;i++) {
+    const blob=preset.blobs[i%preset.blobs.length];
+    const repeat=i>=preset.blobs.length;
+    const jitter=variant ? .25 : 0;
+    const x=clamp(blob.x+(random()-.5)*jitter+(repeat?(random()-.5)*.6:0),-.2,1.2);
+    const y=clamp(blob.y+(random()-.5)*jitter+(repeat?(random()-.5)*.6:0),-.2,1.2);
+    const warp=settings.warp/100;
+    let rx=blob.rx*(variant?mix(.8,1.25,random()):1),ry=blob.ry*(variant?mix(.8,1.25,random()):1);
+    if(preset.mode==='bokeh'){rx=ry=Math.sqrt(rx*ry);}
+    const color=colors[blob.color];
+    ctx.save();ctx.translate((x+Math.sin(y*12+settings.seed*.01)*warp*.08)*width,(y+Math.sin(x*11)*warp*.05)*height);
+    ctx.rotate(blob.tilt+(random()-.5)*jitter);ctx.scale(Math.max(.001,rx*height),Math.max(.001,ry*height));
+    if(preset.mode==='shapes') {
+      const g=ctx.createRadialGradient(0,0,0,0,0,1);g.addColorStop(0,color);g.addColorStop(.45+settings.edge/100*.54,color);g.addColorStop(1,color+'00');ctx.fillStyle=g;ctx.fillRect(-1,-1,2,2);
+    } else {
+      const g=ctx.createRadialGradient(0,0,0,0,0,1.5);
+      g.addColorStop(0,color);g.addColorStop(.10+settings.edge/100*.48,color);g.addColorStop(1,color+'00');
+      ctx.fillStyle=g;ctx.fillRect(-1.5,-1.5,3,3);
+    }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+const smartModes=[['soft','Мягкие массы'],['shapes','Чёткие формы'],['bokeh','Боке']];
+let smartSession=null;
+const smartStorage='gradient-studio.smart-presets.v1';
+const savedSmartKeys=new Set();
+
+function candidatePreset(analysis,mode,count) {
+  return {name:'Импорт',shape:'extracted',seed:analysis.seed,colors:[...analysis.colors],anchors:[],smart:true,mode,
+    background:analysis.background,blobs:analysis.blobs.map(blob=>({...blob})),
+    values:{count,scale:50,warp:0,angle:0,softness:mode==='shapes'?4:mode==='bokeh'?18:13,edge:mode==='shapes'?88:58,grain:Math.min(18,analysis.grain),texture:20}};
+}
+
+function validSmartPreset(p) {
+  if(!p || p.smart!==true || p.shape!=='extracted' || !smartModes.some(([mode])=>mode===p.mode) || typeof p.name!=='string' || p.name.length>100)return false;
+  if(!Number.isInteger(p.seed)||p.seed<0||p.seed>4294967295||!Number.isInteger(p.background)||p.background<0||p.background>4)return false;
+  if(!Array.isArray(p.colors)||p.colors.length!==5||!p.colors.every(c=>/^#[0-9a-f]{6}$/i.test(c)))return false;
+  if(!Array.isArray(p.blobs)||p.blobs.length<1||p.blobs.length>12||!p.blobs.every(b=>['x','y','rx','ry','tilt','color','area'].every(k=>Number.isFinite(b[k]))&&b.x>=0&&b.x<=1&&b.y>=0&&b.y<=1&&b.rx>0&&b.rx<=1.2&&b.ry>0&&b.ry<=.9&&Number.isInteger(b.color)&&b.color>=0&&b.color<5))return false;
+  if(p.trace&&(!validTraceGeometry(p.trace)||!['planes','poster','contour'].includes(p.traceStyle)))return false;
+  if(p.recipe&&!validInspiredRecipe(p.recipe))return false;
+  if(p.values?.seed!==undefined&&(!Number.isInteger(p.values.seed)||p.values.seed<0||p.values.seed>4294967295))return false;
+  return controls.every(([key,,min,max])=>Number.isInteger(p.values?.[key])&&p.values[key]>=min&&p.values[key]<=max);
+}
+
+function restoreSmartPresets() {
+  try {
+    const saved=JSON.parse(localStorage.getItem(smartStorage)||'[]');
+    if(!Array.isArray(saved))return;
+    for(const [key,preset] of saved.slice(0,100))if(/^smart-[a-z0-9-]+$/.test(key)&&validSmartPreset(preset)){presets[key]={...preset,anchors:[]};savedSmartKeys.add(key);}
+  } catch(error){console.warn('Could not restore imported presets',error);}
+}
+
+function saveSmartPresets() {
+  try {localStorage.setItem(smartStorage,JSON.stringify(Object.entries(presets).filter(([key,p])=>p.smart&&savedSmartKeys.has(key))));return true;}
+  catch(error){console.warn('Could not persist imported presets',error);return false;}
+}
+
+async function loadSmartImport(slot) {
+  const input=byId(slot+'-smart-file'),file=input.files[0];if(!file)return;
+  const button=byId(slot+'-smart');button.disabled=true;status.textContent='Анализирую изображение…';
+  try {
+    const image=await decodeUpload(file),source=document.createElement('canvas');
+    const factor=Math.min(1,4096/Math.max(image.naturalWidth,image.naturalHeight));
+    source.width=Math.max(1,Math.round(image.naturalWidth*factor));source.height=Math.max(1,Math.round(image.naturalHeight*factor));
+    const ctx=source.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,source.width,source.height);ctx.drawImage(image,0,0,source.width,source.height);
+    const format=byId('format').value,[w,h]=sizes[format];
+    const crop=image.naturalWidth*h===image.naturalHeight*w?{x:0,y:0,w:1,h:1}:await requestCrop(source,format);
+    if(!crop){status.textContent='';return;}
+    status.textContent='Анализирую изображение…';
+    await new Promise(requestAnimationFrame);
+    const sample=document.createElement('canvas');sample.width=80;sample.height=Math.round(80*h/w);
+    const sampleCtx=sample.getContext('2d',{willReadFrequently:true});
+    sampleCtx.drawImage(source,crop.x*source.width,crop.y*source.height,crop.w*source.width,crop.h*source.height,0,0,sample.width,sample.height);
+    const analysis=await analyzeInBrowser(sampleCtx.getImageData(0,0,sample.width,sample.height));
+    smartSession={slot,analysis,format,source:sample,mode:'soft'};
+    byId('smart-save-no').checked=true;
+    byId('smart-name').value=file.name.replace(/\.[^.]+$/,'').slice(0,65)||'Мой пресет';
+    byId('smart-detail').value=Math.min(12,Math.max(1,analysis.blobs.length));
+    const original=byId('smart-original');original.width=80;original.height=sample.height;original.getContext('2d').drawImage(sample,0,0);
+    drawSmartCandidates();byId('smart-dialog').showModal();status.textContent='';
+  } catch(error){console.error('Smart import failed',error);status.textContent='Умный импорт: '+error.message;}
+  finally{input.value='';button.disabled=false;}
+}
+
+function drawSmartCandidates() {
+  if(!smartSession)return;
+  const count=byId('smart-detail').valueAsNumber;
+  byId('smart-detail-label').value=count;
+  for(const [mode] of smartModes) {
+    const preset=candidatePreset(smartSession.analysis,mode,count);
+    const c=byId('smart-preview-'+mode),[w,h]=sizes[smartSession.format];
+    render(c,160,Math.round(160*h/w),{...preset.values,colors:preset.colors,shape:preset.shape,preset,seed:preset.seed,format:smartSession.format});
+    byId('smart-choice-'+mode).setAttribute('aria-pressed',String(smartSession.mode===mode));
+  }
+}
+
+function applySmartImport() {
+  if(!smartSession)return;
+  const {slot,analysis,mode}=smartSession;
+  const preset=candidatePreset(analysis,mode,byId('smart-detail').valueAsNumber);
+  preset.name=(byId('smart-name').value.trim()||'Мой пресет').slice(0,80);
+  const key='smart-'+Date.now().toString(36)+'-'+freshSeed().toString(36);
+  presets[key]=preset;
+  for(const target of ['a','b']) {
+    const option=document.createElement('option');option.value=key;option.textContent=preset.name;byId(target+'-preset').append(option);
+  }
+  const wantsSave=byId('smart-save-yes').checked;
+  if(wantsSave)savedSmartKeys.add(key);
+  const persisted=!wantsSave||saveSmartPresets();
+  byId('smart-dialog').close();smartSession=null;setParent(slot,key);
+  if(!persisted)requestAnimationFrame(()=>status.textContent='Пресет создан, но браузер не разрешил сохранить библиотеку');
+}
+
+byId('smart-apply').addEventListener('click',applySmartImport);
+byId('smart-cancel').addEventListener('click',()=>{smartSession=null;byId('smart-dialog').close();});
+byId('smart-dialog').addEventListener('cancel',()=>smartSession=null);
+byId('smart-dialog').addEventListener('close',()=>{if(!byId('smart-dialog').open)smartSession=null;});
+byId('smart-detail').addEventListener('input',drawSmartCandidates);
+for(const [mode] of smartModes)byId('smart-choice-'+mode).addEventListener('click',()=>{if(smartSession){smartSession.mode=mode;drawSmartCandidates();}});
+// Vision supplies a bounded recipe; geometry is drawn locally and remains editable.
+const inspiredFamilies={ribbons:'Стеклянные ленты',organic:'Органические силуэты',waves:'Световые волны'};
+const inspiredMetrics=['density','flow','translucency','detail','negativeSpace','focusX','focusY'];
+const inspiredStructures=['folds','loops','petals','branches','contours','ripples'];
+let aiSession=null;
+function validInspiredRecipe(r) {
+  return !!r&&Object.hasOwn(inspiredFamilies,r.family)&&Object.hasOwn(inspiredFamilies,r.secondary)&&
+    (r.structure===undefined||inspiredStructures.includes(r.structure))&&
+    inspiredMetrics.every(k=>Number.isFinite(r[k])&&r[k]>=0&&r[k]<=1)&&
+    Number.isFinite(r.direction)&&Math.abs(r.direction)<=180&&
+    (r.freedom===undefined||(Number.isFinite(r.freedom)&&r.freedom>=0&&r.freedom<=1));
+}
+function inspiredPreset(analysis,recipe,index,count,freedom,seed) {
+  if(!validInspiredRecipe(recipe))throw Error('Некорректный рецепт композиции');
+  const p=candidatePreset(analysis,'soft',count);
+  // Keep the reference hues, opening up their tonal range for legible fine details.
+  const rgb=c=>[1,3,5].map(k=>parseInt(c.slice(k,k+2),16)/255);
+  const luma=c=>c[0]*.2126+c[1]*.7152+c[2]*.0722;
+  const backgroundLight=luma(rgb(p.colors[p.background]));
+  const ranked=p.colors.map((c,i)=>({i,rgb:rgb(c)})).filter(c=>c.i!==p.background).sort((a,b)=>luma(a.rgb)-luma(b.rgb));
+  ranked.forEach((entry,rank)=>{
+    const current=luma(entry.rgb),offset=[-1,-.45,.45,1][rank]*(.13+freedom*.12+(index===1?.08:0));
+    const desired=clamp(backgroundLight+offset,.025,.975);
+    const target=offset<0?Math.min(current,desired):Math.max(current,desired);
+    const values=entry.rgb.map(v=>target>current?mix(v,1,(target-current)/Math.max(.001,1-current)):v*target/Math.max(.001,current));
+    p.colors[entry.i]='#'+values.map(v=>Math.round(clamp(v,0,1)*255).toString(16).padStart(2,'0')).join('');
+  });
+  const remaining=Object.keys(inspiredFamilies).filter(k=>k!==recipe.family);
+  const secondary=recipe.secondary===recipe.family?remaining[0]:recipe.secondary;
+  const family=index===0?recipe.family:index===1?secondary:remaining.find(k=>k!==secondary)||remaining[1];
+  p.seed=seed>>>0;p.name=['По референсу','Графичная версия','Эксперимент'][index];
+  p.recipe={...recipe,family,secondary:index===2?recipe.family:secondary,freedom,
+    structure:family===recipe.family?(recipe.structure||{ribbons:'folds',organic:'petals',waves:'contours'}[family]):{ribbons:'loops',organic:'branches',waves:'contours'}[family],
+    density:clamp(recipe.density+(index===1?-.10:index===2?.12:0),0,1),
+    translucency:index===1?recipe.translucency*.25:clamp(recipe.translucency+(index===2?.2:0),0,1),
+    detail:clamp(recipe.detail+(index===1?.18:index===2?.12:0),0,1)};
+  p.values={count,scale:50,warp:Math.round(recipe.flow*32),angle:0,softness:index===1?0:2,edge:index===1?90:68,grain:index===1?3:7,texture:14};
+  return p;
+}
+function renderInspired(ctx,width,height,settings) {
+  const r=settings.preset.recipe,p=settings.colors,random=rng(settings.seed),aspect=width/height;
+  const alpha=(c,a)=>c+Math.round(clamp(a,0,1)*255).toString(16).padStart(2,'0');
+  const bg=p[settings.preset.background],inks=p.filter((_,i)=>i!==settings.preset.background);
+  const brightness=c=>[1,3,5].reduce((sum,k,i)=>sum+parseInt(c.slice(k,k+2),16)*[.2126,.7152,.0722][i],0);
+  const tonal=[...inks].sort((a,b)=>brightness(a)-brightness(b));
+  ctx.fillStyle=bg;ctx.fillRect(0,0,width,height);
+  ctx.save();ctx.scale(width,height);
+  const light=ctx.createRadialGradient(r.focusX,r.focusY,0,r.focusX,r.focusY,.95);
+  light.addColorStop(0,alpha(inks[0],.24));light.addColorStop(1,alpha(bg,0));ctx.fillStyle=light;ctx.fillRect(0,0,1,1);
+  ctx.translate(.5,.5);ctx.scale(1,aspect);ctx.rotate(settings.angle*Math.PI/180);
+  const size=mix(.5,1.6,settings.scale/100);ctx.scale(size,size);ctx.scale(1,1/aspect);ctx.translate(-.5,-.5);
+  const freedom=r.freedom??.5,flow=.12+r.flow*.5+settings.warp/100*.38;
+  const detail=(settings.count/12)*(.35+r.detail*.65),density=(.25+r.density*.75)*(1-r.negativeSpace*.42);
+  const count=Math.max(2,Math.round(settings.count*(.6+density*.7)));
+  const angle=r.direction*Math.PI/180;
+  const structure=r.structure||{ribbons:'folds',organic:'petals',waves:'contours'}[r.family];
+  const color=i=>inks[((i%inks.length)+inks.length)%inks.length];
+  const jitter=()=> (random()-.5)*freedom;
+  const anchors=settings.preset.blobs;
+  const strokePath=(points,c,lineWidth)=>{
+    ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));ctx.strokeStyle=c;ctx.lineWidth=lineWidth;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+  };
+  function ribbons(n,opacity=1) {
+    for(let i=0;i<n;i++) {
+      const anchor=anchors[i%anchors.length],spread=(i-(n-1)/2)/Math.max(2,n)*.75;
+      const x=mix(anchor.x,r.focusX,.35)+jitter()*.28,y=mix(anchor.y,r.focusY,.35)+spread+jitter()*.18;
+      const phase=random()*Math.PI*2,phase2=random()*Math.PI*2;
+      const band=(.035+random()*.075)*(1-r.negativeSpace*.5),length=.75+random()*.85;
+      ctx.save();ctx.translate(x,y);ctx.rotate(angle+(random()-.5)*.65*(freedom+.15));
+      const upper=[],lower=[],middle=[];
+      for(let s=0;s<=90;s++) {
+        const t=s/90,u=(t-.5)*length;
+        const v=Math.sin(t*Math.PI*1.55+phase)*flow*.34+Math.sin(t*Math.PI*3+phase2)*flow*.065;
+        const thickness=band*(.32+.68*Math.sin(t*Math.PI)**.7)*(.82+.18*Math.sin(t*7+phase));
+        if(structure==='loops') {
+          const theta=t*Math.PI*2,rad=.19+length*.11;
+          upper.push([Math.cos(theta)*(rad+thickness),Math.sin(theta)*(rad*.65+thickness)+Math.sin(theta*2+phase)*flow*.07]);
+          lower.push([Math.cos(theta)*(rad-thickness),Math.sin(theta)*(rad*.65-thickness)+Math.sin(theta*2+phase)*flow*.07]);
+        } else {upper.push([u,v-thickness]);lower.push([u,v+thickness]);}
+      }
+      ctx.beginPath();upper.forEach((pt,k)=>k?ctx.lineTo(...pt):ctx.moveTo(...pt));lower.slice().reverse().forEach(pt=>ctx.lineTo(...pt));ctx.closePath();
+      const g=ctx.createLinearGradient(0,-.25,0,.25),c=color(i);
+      g.addColorStop(0,alpha(c,.06));g.addColorStop(.34,alpha(c,.64-r.translucency*.24));
+      g.addColorStop(.48,alpha(color(i+1),.8-r.translucency*.22));g.addColorStop(.55,alpha(c,.2));g.addColorStop(.8,alpha(c,.65));g.addColorStop(1,alpha(c,.04));
+      ctx.globalAlpha=opacity;ctx.fillStyle=g;ctx.fill();
+      strokePath(upper,alpha(color(i+2),.25+settings.edge/100*.38),.0018);
+      strokePath(lower,alpha(c,.45),.001);
+      const threads=Math.round(3+detail*15);
+      for(let j=1;j<threads;j++) {
+        const f=j/threads,pts=upper.map((pt,k)=>[pt[0],mix(pt[1],lower[k][1],f)]);
+        strokePath(pts,alpha(j%3?c:color(i+2),.06+detail*.13),j%4===0?.0012:.00055);
+      }
+      ctx.restore();
+    }
+  }
+  function organic(n,opacity=1) {
+    if(structure==='branches') {
+      for(let i=0;i<n;i++) {
+        const a=anchors[i%anchors.length],length=.35+random()*.55,bend=(random()-.5)*flow*.7;
+        ctx.save();ctx.translate(mix(a.x,r.focusX,.3)+jitter()*.25,mix(a.y,r.focusY,.3)+jitter()*.25);ctx.rotate(angle+(random()-.5)*1.4);
+        const spine=[];for(let j=0;j<=50;j++){const t=j/50;spine.push([(t-.5)*length,Math.sin(t*Math.PI)*bend]);}
+        ctx.globalAlpha=opacity;strokePath(spine,alpha(color(i),.7),.0015+detail*.002);
+        const leaves=Math.round(5+detail*12);
+        for(let j=0;j<leaves;j++)for(const sign of [-1,1]) {
+          const t=(j+.4)/leaves,x=(t-.5)*length,y=Math.sin(t*Math.PI)*bend;
+          const leafLength=(.035+random()*.06)*(1-t*.45),tipX=x+leafLength*.8,tipY=y+sign*leafLength;
+          ctx.beginPath();ctx.moveTo(x,y);ctx.bezierCurveTo(x-leafLength*.3,y+sign*leafLength*.6,tipX-leafLength*.25,tipY,tipX,tipY);
+          ctx.bezierCurveTo(tipX+leafLength*.1,tipY-sign*leafLength*.5,x+leafLength*.7,y,x,y);ctx.closePath();
+          const g=ctx.createLinearGradient(x,y,tipX,tipY);g.addColorStop(0,alpha(color(i),.9-r.translucency*.3));g.addColorStop(1,alpha(color(i+1),.7-r.translucency*.2));ctx.fillStyle=g;ctx.fill();
+          if(detail>.35)strokePath([[x,y],[mix(x,tipX,.5),mix(y,tipY,.5)],[tipX,tipY]],alpha(color(i+2),.35),.0006);
+        }
+        ctx.restore();
+      }
+      return;
+    }
+    for(let i=0;i<n;i++) {
+      const a=anchors[i%anchors.length],x=mix(a.x,r.focusX,.2)+jitter()*.35,y=mix(a.y,r.focusY,.2)+jitter()*.35;
+      const rx=clamp(a.rx,.12,.44)*(.65+random()*.65),ry=clamp(a.ry,.13,.44)*(.65+random()*.65);
+      const phase=random()*6.28,lobes=3+Math.floor(random()*4),points=[];
+      ctx.save();ctx.translate(x,y);ctx.rotate(angle+(random()-.5)*2);
+      for(let j=0;j<=110;j++) {
+        const t=j/110*Math.PI*2,k=1+Math.sin(t*lobes+phase)*flow*.28+Math.cos(t*2-phase)*.15;
+        points.push([Math.cos(t)*rx*k,Math.sin(t)*ry*k]);
+      }
+      ctx.beginPath();points.forEach((pt,j)=>j?ctx.lineTo(...pt):ctx.moveTo(...pt));ctx.closePath();
+      const g=ctx.createLinearGradient(-rx,-ry,rx,ry);
+      g.addColorStop(0,alpha(color(i),.94-r.translucency*.3));g.addColorStop(.6,alpha(color(i),.8-r.translucency*.45));g.addColorStop(1,alpha(color(i+1),.7-r.translucency*.3));
+      ctx.globalAlpha=opacity;ctx.fillStyle=g;ctx.fill();
+      strokePath(points,alpha(color(i+2),.18+settings.edge/100*.3),.0015);
+      // Curved veins and nested contours give silhouettes an internal structure.
+      ctx.save();ctx.clip();
+      const veins=Math.round(6+detail*28);
+      for(let j=0;j<veins;j++) {
+        const t=j/veins,pts=[];
+        for(let s=0;s<=35;s++) {const u=s/35;pts.push([(u-.5)*rx*2.4, (t-.5)*ry*2.2+Math.sin(u*3.14+phase)*ry*flow*.65]);}
+        strokePath(pts,alpha(color(i+2),j%5===0?.22:.07+detail*.08),j%5===0?.0015:.00065);
+      }
+      ctx.restore();ctx.restore();
+    }
+  }
+  function waves(n,opacity=1) {
+    if(structure==='ripples') {
+      const rows=Math.round(20+detail*75),phase=random()*6.28;
+      ctx.save();ctx.translate(r.focusX,r.focusY);ctx.rotate(angle);ctx.globalAlpha=opacity;
+      for(let j=0;j<rows;j++) {
+        const y=(j/rows-.5)*1.55,near=(j/rows)**1.8,segments=Math.round(3+density*7);
+        for(let i=0;i<segments;i++) {
+          const x=((i+random()*.9)/segments-.5)*1.7+jitter()*.05,len=(.035+random()*.13)*(.4+near),pts=[];
+          for(let s=0;s<=18;s++){const t=s/18;pts.push([x+t*len,y+Math.sin(x*17+t*2+phase+j*.7)*(.002+near*.014)*flow]);}
+          strokePath(pts,alpha(tonal[j%3===0?1:0],.4+random()*.45),(.0009+near*.004)*(i%4===0?1.8:1));
+          if(random()<detail*.6)strokePath(pts.map(pt=>[pt[0],pt[1]-.003]),alpha(tonal.at(-1),.45+near*.45),.0009+near*.0018);
+        }
+      }
+      ctx.restore();return;
+    }
+    const bands=Math.max(2,Math.round(n*.55));
+    for(let i=0;i<bands;i++) {
+      const phase=random()*6.28,amp=(.09+random()*.12)*flow,lines=Math.round(18+detail*75);
+      const anchor=anchors[i%anchors.length];
+      ctx.save();ctx.translate(mix(anchor.x,r.focusX,.55)+jitter()*.2,mix(anchor.y,r.focusY,.55)+(i-(bands-1)/2)*.11+jitter()*.15);
+      ctx.rotate(angle+(random()-.5)*freedom*.7);ctx.globalAlpha=opacity;
+      for(let j=0;j<lines;j++) {
+        const t=j/Math.max(1,lines-1),offset=(t-.5)*(.16+density*.3),pts=[];
+        for(let s=0;s<=110;s++) {
+          const u=s/110,x=(u-.5)*1.8;
+          const y=offset+Math.sin(u*6.28+phase+t*1.2)*amp+Math.sin(u*12.56-phase)*amp*.18+Math.sin(u*3.14)*offset*flow;
+          pts.push([x,y]);
+        }
+        const envelope=Math.sin(t*Math.PI)**.6;
+        strokePath(pts,alpha(color(i+(j%17===0?1:0)),(.10+envelope*.6)*(j%7===0?1:.75)),j%7===0?.0023:.00075+settings.edge/100*.0005);
+      }
+      ctx.restore();
+    }
+  }
+  const painters={ribbons,organic,waves};
+  // Main structure, a restrained contrasting layer, and a small number of highlights.
+  painters[r.family](count);
+  if(r.secondary!==r.family&&freedom>.12) painters[r.secondary](Math.max(1,Math.round(count*.2)),.12+freedom*.2);
+  if(detail>.25) {
+    ctx.globalAlpha=1;
+    for(let i=0;i<Math.round(detail*30);i++) {
+      const x=r.focusX+(random()-.5)*1.25,y=r.focusY+(random()-.5)*1.25;
+      ctx.beginPath();ctx.arc(x,y,.0006+random()*.0015,0,Math.PI*2);ctx.fillStyle=alpha(color(i),.25+random()*.35);ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+// Extract actual color boundaries. Coordinates remain on the source sampling grid.
+function extractReferenceContours({pixels,width,height}) {
+  const rgbToLab=(r,g,b)=>{
+    const lin=x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4};r=lin(r);g=lin(g);b=lin(b);
+    const l=Math.cbrt(.4122214708*r+.5363325363*g+.0514459929*b),m=Math.cbrt(.2119034982*r+.6806995451*g+.1073969566*b),s=Math.cbrt(.0883024619*r+.2817188376*g+.6299787005*b);
+    return [.2104542553*l+.793617785*m-.0040720468*s,1.9779984951*l-2.428592205*m+.4505937099*s,.0259040371*l+.7827717662*m-.808675766*s];
+  };
+  const n=width*height,hist=new Map(),bins=new Uint16Array(n);let seed=2166136261;
+  for(let i=0;i<n;i++) {
+    const r=pixels[i*4],g=pixels[i*4+1],b=pixels[i*4+2],key=(r>>3)*1024+(g>>3)*32+(b>>3);bins[i]=key;
+    let bin=hist.get(key);if(!bin){bin={key,count:0,rgb:[0,0,0]};hist.set(key,bin);}
+    bin.count++;bin.rgb[0]+=r;bin.rgb[1]+=g;bin.rgb[2]+=b;seed=Math.imul(seed^r^g<<8^b<<16,16777619)>>>0;
+  }
+  const samples=[...hist.values()];for(const b of samples){b.rgb=b.rgb.map(v=>v/b.count);b.lab=rgbToLab(...b.rgb);}
+  const distance=(a,b)=>(a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2;
+  let largest=samples[0];for(const b of samples)if(b.count>largest.count)largest=b;
+  const centers=[[...largest.lab]],k=Math.min(32,samples.length),nearest=new Float32Array(samples.length).fill(Infinity);
+  for(let c=1;c<k;c++) {
+    let best=-1,index=0;
+    for(let i=0;i<samples.length;i++) {nearest[i]=Math.min(nearest[i],distance(samples[i].lab,centers[c-1]));const score=nearest[i]*Math.sqrt(samples[i].count);if(score>best){best=score;index=i;}}
+    centers.push([...samples[index].lab]);
+  }
+  const populations=new Float64Array(k),labels=new Uint8Array(samples.length);
+  for(let pass=0;pass<7;pass++) {
+    const sums=Array.from({length:k},()=>[0,0,0]);populations.fill(0);
+    for(let i=0;i<samples.length;i++) {
+      const b=samples[i];let label=0,best=Infinity;
+      for(let j=0;j<k;j++){const d=distance(b.lab,centers[j]);if(d<best){best=d;label=j;}}
+      labels[i]=label;populations[label]+=b.count;for(let c=0;c<3;c++)sums[label][c]+=b.lab[c]*b.count;
+    }
+    for(let j=0;j<k;j++)if(populations[j])centers[j]=sums[j].map(v=>v/populations[j]);
+  }
+  const sums=Array.from({length:k},()=>[0,0,0]),lookup=new Uint8Array(32768);
+  for(let i=0;i<samples.length;i++){const b=samples[i],j=labels[i];lookup[b.key]=j;for(let c=0;c<3;c++)sums[j][c]+=b.rgb[c]*b.count;}
+  const palette=sums.map((c,j)=>'#'+c.map((v,index)=>Math.round(populations[j]?v/populations[j]:largest.rgb[index]).toString(16).padStart(2,'0')).join(''));
+  const grid=Uint8Array.from(bins,key=>lookup[key]);
+  const stride=width+1,edges=Array.from({length:k},()=>new Map());
+  const edge=(color,a,b)=>{let out=edges[color].get(a);if(!out){out=[];edges[color].set(a,out);}out.push(b);};
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++) {
+    const i=y*width+x,c=grid[i],tl=y*stride+x;
+    if(y===0||grid[i-width]!==c)edge(c,tl,tl+1);
+    if(x===width-1||grid[i+1]!==c)edge(c,tl+1,tl+stride+1);
+    if(y===height-1||grid[i+width]!==c)edge(c,tl+stride+1,tl+stride);
+    if(x===0||grid[i-1]!==c)edge(c,tl+stride,tl);
+  }
+  const paths=[];
+  for(let color=0;color<k;color++) {
+    const map=edges[color],loops=[];
+    const direction=(a,b)=>b-a===1?0:b-a===stride?1:b-a===-1?2:3;
+    while(map.size) {
+      const start=map.keys().next().value;let vertex=start,previous=-1;const points=[];
+      do {
+        points.push(vertex%stride,Math.floor(vertex/stride));const options=map.get(vertex);
+        if(!options?.length)throw Error('Не удалось замкнуть контур');
+        let index=0;
+        if(previous>=0&&options.length>1) {
+          const rank=[1,0,3,2];let best=Infinity;
+          for(let j=0;j<options.length;j++){const turn=(direction(vertex,options[j])-previous+4)%4,score=rank.indexOf(turn);if(score<best){best=score;index=j;}}
+        }
+        const next=options.splice(index,1)[0];if(!options.length)map.delete(vertex);previous=direction(vertex,next);vertex=next;
+      }while(vertex!==start);
+      const compact=[],len=points.length/2;
+      for(let j=0;j<len;j++) {
+        const a=((j+len-1)%len)*2,b=j*2,c=((j+1)%len)*2;
+        if((points[b]-points[a])*(points[c+1]-points[b+1])!==(points[b+1]-points[a+1])*(points[c]-points[b]))compact.push(points[b],points[b+1]);
+      }
+      if(compact.length>=6)loops.push(compact);
+    }
+    if(loops.length)paths.push({color,loops});
+  }
+  const outlines=[];
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++) {
+    const i=y*width+x,c=grid[i];
+    if(x+1<width&&distance(centers[c],centers[grid[i+1]])>.012)outlines.push([x+1,y,x+1,y+1]);
+    if(y+1<height&&distance(centers[c],centers[grid[i+width]])>.012)outlines.push([x,y+1,x+1,y+1]);
+  }
+  return {version:1,width,height,palette,paths,outlines,seed};
+}
+async function traceInBrowser(imageData) {
+  const payload={pixels:imageData.data,width:imageData.width,height:imageData.height};
+  if(typeof Worker==='undefined')return extractReferenceContours(payload);
+  const url=URL.createObjectURL(new Blob(['self.onmessage=e=>{try{self.postMessage({result:('+extractReferenceContours.toString()+')(e.data)})}catch(error){self.postMessage({error:error.message})}}'],{type:'text/javascript'}));
+  let worker;
+  try {
+    worker=new Worker(url);
+    return await new Promise((resolve,reject)=>{worker.onmessage=e=>e.data.error?reject(Error(e.data.error)):resolve(e.data.result);worker.onerror=()=>reject(Error('Не удалось извлечь контуры'));worker.postMessage(payload);});
+  } finally{worker?.terminate();URL.revokeObjectURL(url);}
+}
+function validTraceGeometry(t) {
+  if(!t||t.version!==1||!Number.isInteger(t.width)||!Number.isInteger(t.height)||t.width<1||t.height<1||t.width>512||t.height>768)return false;
+  if(!Array.isArray(t.palette)||!t.palette.length||t.palette.length>32||!t.palette.every(c=>/^#[0-9a-f]{6}$/i.test(c)))return false;
+  if(!Array.isArray(t.roles)||t.roles.length!==t.palette.length||!t.roles.every(i=>Number.isInteger(i)&&i>=0&&i<5))return false;
+  if(!Array.isArray(t.baseColors)||t.baseColors.length!==5||!t.baseColors.every(c=>/^#[0-9a-f]{6}$/i.test(c)))return false;
+  if(!Array.isArray(t.paths)||!t.paths.length||t.paths.length>32)return false;
+  if(t.outlines!==undefined&&(!Array.isArray(t.outlines)||t.outlines.length>400000||!t.outlines.every(line=>Array.isArray(line)&&line.length===4&&line.every((v,i)=>Number.isInteger(v)&&v>=0&&v<=(i%2?t.height:t.width)))))return false;
+  let points=0;
+  return t.paths.every(p=>Number.isInteger(p.color)&&p.color>=0&&p.color<t.palette.length&&Array.isArray(p.loops)&&p.loops.every(loop=>{
+    if(!Array.isArray(loop)||loop.length<6||loop.length%2)return false;points+=loop.length;
+    return points<=2000000&&loop.every((v,i)=>Number.isInteger(v)&&v>=0&&v<=(i%2?t.height:t.width));
+  }));
+}
+function tracePreset(analysis,trace,style,count,simplification) {
+  const p=candidatePreset(analysis,'shapes',count);p.trace=trace;p.traceStyle=style;p.seed=trace.seed>>>0;
+  p.values={count,scale:50,warp:0,angle:0,softness:0,edge:100-simplification,grain:0,texture:14};return p;
+}
+const tracePathCache=new WeakMap();
+const traceVectorCache=new WeakMap();
+function simplifiedTracePaths(trace,amount) {
+  if(!amount)return trace.paths;
+  let cache=tracePathCache.get(trace);if(!cache){cache=new Map();tracePathCache.set(trace,cache);}if(cache.has(amount))return cache.get(amount);
+  const epsilon=amount/100*4;
+  const simplifyOpen=points=>{
+    const n=points.length/2;if(n<=2)return points;
+    const keep=new Uint8Array(n);keep[0]=keep[n-1]=1;const stack=[[0,n-1]],e2=epsilon*epsilon;
+    while(stack.length) {
+      const [a,b]=stack.pop(),ax=points[a*2],ay=points[a*2+1],dx=points[b*2]-ax,dy=points[b*2+1]-ay,len=dx*dx+dy*dy;
+      let best=e2,index=-1;
+      for(let i=a+1;i<b;i++){const x=points[i*2]-ax,y=points[i*2+1]-ay,t=len?clamp((x*dx+y*dy)/len,0,1):0,d=(x-t*dx)**2+(y-t*dy)**2;if(d>best){best=d;index=i;}}
+      if(index>=0){keep[index]=1;stack.push([a,index],[index,b]);}
+    }
+    return points.filter((_,i)=>keep[i>>1]);
+  };
+  const paths=trace.paths.map(p=>({color:p.color,loops:p.loops.map(loop=>{
+    let split=2,best=-1;for(let i=2;i<loop.length;i+=2){const d=(loop[i]-loop[0])**2+(loop[i+1]-loop[1])**2;if(d>best){best=d;split=i;}}
+    const a=simplifyOpen(loop.slice(0,split+2)),b=simplifyOpen(loop.slice(split).concat(loop.slice(0,2)));
+    const result=a.slice(0,-2).concat(b.slice(0,-2));return result.length>=6?result:loop;
+  })}));
+  if(cache.size>=20)cache.delete(cache.keys().next().value);cache.set(amount,paths);return paths;
+}
+function renderTraced(ctx,width,height,settings) {
+  const t=settings.preset.trace,style=settings.preset.traceStyle,read=c=>[1,3,5].map(k=>parseInt(c.slice(k,k+2),16));
+  const controlsRGB=settings.colors.map(read),base=t.baseColors.map(read),native=t.palette.map(read),limit=Math.min(native.length,Math.round(5+(settings.count-1)/11*27));
+  const nearest=n=>{let best=Infinity,index=0;for(let i=0;i<limit;i++){const d=n.reduce((s,v,k)=>s+(v-native[i][k])**2,0);if(d<best){best=d;index=i;}}return index;};
+  const color=n=>{
+    const index=nearest(native[n]),role=t.roles[index],original=style==='poster'?base[role]:native[index];
+    return '#'+original.map((v,k)=>Math.round(clamp(v+controlsRGB[role][k]-base[role][k],0,255)).toString(16).padStart(2,'0')).join('');
+  };
+  const paints=t.palette.map((_,i)=>color(i)),paths=simplifiedTracePaths(t,100-settings.edge);
+  ctx.fillStyle=settings.colors[settings.preset.background];ctx.fillRect(0,0,width,height);
+  ctx.save();ctx.translate(width/2,height/2);ctx.rotate(settings.angle*Math.PI/180);const scale=.5+settings.scale/100;ctx.scale(scale,scale);ctx.translate(-width/2,-height/2);
+  const warp=settings.warp/100,phase=rng(settings.seed)()*Math.PI*2;
+  const point=(x,y)=>[width*(x/t.width+Math.sin(y/t.height*8+phase)*warp*.035),height*(y/t.height+Math.sin(x/t.width*9-phase)*warp*.035)];
+  if(!warp&&typeof Path2D!=='undefined') {
+    let cache=traceVectorCache.get(t);if(!cache){cache=new Map();traceVectorCache.set(t,cache);}
+    const amount=100-settings.edge;let vectors=cache.get(amount);
+    if(!vectors){vectors=paths.map(p=>{const path=new Path2D();for(const loop of p.loops){path.moveTo(loop[0],loop[1]);for(let i=2;i<loop.length;i+=2)path.lineTo(loop[i],loop[i+1]);path.closePath();}return {color:p.color,path};});vectors.outline=new Path2D();for(const line of t.outlines||[]){vectors.outline.moveTo(line[0],line[1]);vectors.outline.lineTo(line[2],line[3]);}if(cache.size>=20)cache.delete(cache.keys().next().value);cache.set(amount,vectors);}
+    ctx.scale(width/t.width,height/t.height);
+    for(const v of vectors){ctx.fillStyle=paints[v.color];ctx.fill(v.path,'evenodd');ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=.8*t.width/width;ctx.stroke(v.path);if(style==='contour'&&!t.outlines){ctx.strokeStyle='#'+read(paints[v.color]).map(n=>Math.round(n*.55).toString(16).padStart(2,'0')).join('');ctx.lineWidth=.55;ctx.stroke(v.path);}}
+    if(style==='contour'&&t.outlines){ctx.strokeStyle=darkTraceInk(paints);ctx.lineWidth=.65;ctx.stroke(vectors.outline);}
+  } else for(const path of paths) {
+    ctx.beginPath();for(const loop of path.loops){for(let i=0;i<loop.length;i+=2){const xy=point(loop[i],loop[i+1]);if(i)ctx.lineTo(...xy);else ctx.moveTo(...xy);}ctx.closePath();}
+    ctx.fillStyle=paints[path.color];ctx.fill('evenodd');ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=.8;ctx.stroke();
+    if(style==='contour'&&!t.outlines) {ctx.strokeStyle='#'+read(paints[path.color]).map(v=>Math.round(v*.55).toString(16).padStart(2,'0')).join('');ctx.lineWidth=width/t.width*.55;ctx.stroke();}
+  }
+  if(warp&&style==='contour'&&t.outlines){ctx.beginPath();for(const line of t.outlines){ctx.moveTo(...point(line[0],line[1]));ctx.lineTo(...point(line[2],line[3]));}ctx.strokeStyle=darkTraceInk(paints);ctx.lineWidth=width/t.width*.65;ctx.stroke();}
+  ctx.restore();
+}
+function darkTraceInk(colors){const rgb=c=>[1,3,5].map(k=>parseInt(c.slice(k,k+2),16));let selected=rgb(colors[0]),best=Infinity;for(const c of colors){const v=rgb(c),l=v[0]*.2126+v[1]*.7152+v[2]*.0722;if(l<best){best=l;selected=v;}}return '#'+selected.map(v=>Math.round(v*.8).toString(16).padStart(2,'0')).join('');}
+
+function aiMessage(message,error=false) {byId('ai-status').textContent=message;byId('ai-status').dataset.error=String(error);}
+async function loadInspiredImport(slot) {
+  const input=byId(slot+'-ai-file'),file=input.files[0];if(!file)return;
+  const button=byId(slot+'-ai');button.disabled=true;status.textContent='Извлекаю цвета и контуры…';
+  try {
+    const image=await decodeUpload(file),source=document.createElement('canvas');
+    const f=Math.min(1,2048/Math.max(image.naturalWidth,image.naturalHeight));source.width=Math.max(1,Math.round(image.naturalWidth*f));source.height=Math.max(1,Math.round(image.naturalHeight*f));
+    const ctx=source.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,source.width,source.height);ctx.drawImage(image,0,0,source.width,source.height);
+    const format=byId('format').value,[w,h]=sizes[format];
+    const crop=image.naturalWidth*h===image.naturalHeight*w?{x:0,y:0,w:1,h:1}:await requestCrop(source,format);if(!crop){status.textContent='';return;}
+    const ref=document.createElement('canvas');ref.width=640;ref.height=Math.round(640*h/w);ref.getContext('2d').drawImage(source,crop.x*source.width,crop.y*source.height,crop.w*source.width,crop.h*source.height,0,0,ref.width,ref.height);
+    const original=byId('ai-original');original.width=ref.width;original.height=ref.height;original.getContext('2d').drawImage(ref,0,0);
+    const sample=document.createElement('canvas');sample.width=Math.min(224,source.width);sample.height=Math.max(1,Math.round(sample.width*h/w));sample.getContext('2d').drawImage(ref,0,0,sample.width,sample.height);
+    const session={slot,format,selected:0,seed:0,candidates:[],trace:null};aiSession=session;
+    byId('ai-save-no').checked=true;byId('ai-name').value=file.name.replace(/\.[^.]+$/,'').slice(0,65)||'Мой пресет';
+    byId('ai-freedom').value=0;byId('ai-detail').value=12;byId('ai-freedom-label').value='0%';byId('ai-detail-label').value='12';
+    for(let i=0;i<3;i++){const c=byId('ai-preview-'+i);c.width=240;c.height=Math.round(240*h/w);byId('ai-card-'+i).disabled=true;byId('ai-caption-'+i).textContent='Извлекаю контуры…';}
+    for(const id of ['ai-apply','ai-detail','ai-freedom'])byId(id).disabled=true;
+    byId('ai-dialog').showModal();aiMessage('Извлекаю реальные цветовые области и их границы…');
+    const start=performance.now();await new Promise(requestAnimationFrame);
+    const trace=await traceInBrowser(sample.getContext('2d').getImageData(0,0,sample.width,sample.height));if(aiSession!==session)return;
+    const baseColors=Array.from({length:5},(_,i)=>trace.palette[i%trace.palette.length]),rgb=c=>[1,3,5].map(k=>parseInt(c.slice(k,k+2),16)),bases=baseColors.map(rgb);
+    trace.baseColors=baseColors;trace.roles=trace.palette.map(c=>{const values=rgb(c);let best=Infinity,index=0;for(let i=0;i<5;i++){const d=values.reduce((sum,v,k)=>sum+(v-bases[i][k])**2,0);if(d<best){best=d;index=i;}}return index;});
+    session.trace=trace;session.seed=trace.seed;session.analysis={colors:baseColors,background:0,seed:trace.seed,grain:0,blobs:[{x:.5,y:.5,rx:.4,ry:.4,tilt:0,color:0,area:1}]};
+    drawInspiredCandidates();aiMessage('Готово за '+((performance.now()-start)/1000).toFixed(1)+' с. '+trace.palette.length+' исходных оттенков. Цвета и расположение областей взяты из фотографии.');status.textContent='';
+  } catch(error){if(byId('ai-dialog').open)aiMessage(error.message,true);else status.textContent='Контуры: '+error.message;}
+  finally{input.value='';button.disabled=false;}
+}
+function drawInspiredCandidates() {
+  const s=aiSession;if(!s?.trace)return;
+  const count=byId('ai-detail').valueAsNumber,simplification=byId('ai-freedom').valueAsNumber;
+  byId('ai-detail-label').value=count;byId('ai-freedom-label').value=simplification+'%';
+  s.candidates=['planes','poster','contour'].map(style=>tracePreset(s.analysis,s.trace,style,count,simplification));
+  for(let i=0;i<3;i++) {
+    const p=s.candidates[i],[w,h]=sizes[s.format];render(byId('ai-preview-'+i),240,Math.round(240*h/w),{...p.values,preset:p,seed:p.seed,colors:p.colors,shape:p.shape,format:s.format});
+    byId('ai-card-'+i).disabled=false;byId('ai-card-'+i).setAttribute('aria-pressed',String(s.selected===i));
+    byId('ai-caption-'+i).textContent=[s.trace.palette.length+' оттенков, реальные границы областей','Пять исходных цветов, крупные цветовые массы','Исходные цвета и обводка реальных границ'][i];
+  }
+  for(const id of ['ai-apply','ai-detail','ai-freedom'])byId(id).disabled=false;
+}
+
+function closeInspired() {closeSelect();aiSession?.abort?.abort();aiSession=null;byId('ai-dialog').close();}
+function applyInspired() {
+  const s=aiSession,p=s?.candidates[s.selected];if(!p)return;
+  p.name=(byId('ai-name').value.trim()||'Мой паттерн').slice(0,80)+' · '+['Формы','Постер','Контуры'][s.selected];
+
+  if(!validSmartPreset(p)){aiMessage('Не удалось сохранить рецепт композиции.',true);return;}
+  const key='smart-'+Date.now().toString(36)+'-'+freshSeed().toString(36);presets[key]=p;
+  for(const slot of ['a','b']){const option=document.createElement('option');option.value=key;option.textContent=p.name;byId(slot+'-preset').append(option);}
+  const wantsSave=byId('ai-save-yes').checked;
+  if(wantsSave)savedSmartKeys.add(key);
+  const saved=!wantsSave||saveSmartPresets(),slot=s.slot;closeInspired();setParent(slot,key);
+  if(!saved)requestAnimationFrame(()=>status.textContent='Пресет создан, но браузер не разрешил сохранить библиотеку');
+}
+function cleanFilePreset(p) {
+  if(!validSmartPreset(p))throw Error('Файл не содержит корректный пресет студии.');
+  const clean={name:p.name,shape:'extracted',smart:true,mode:p.mode,seed:p.seed,background:p.background,colors:[...p.colors],anchors:[],
+    blobs:p.blobs.map(b=>Object.fromEntries(['x','y','rx','ry','tilt','color','area'].map(k=>[k,b[k]]))),
+    values:Object.fromEntries(controls.map(([k])=>[k,p.values[k]]))};
+  if(p.trace){clean.trace=JSON.parse(JSON.stringify(p.trace));clean.traceStyle=p.traceStyle;}
+  if(p.values.seed!==undefined)clean.values.seed=p.values.seed;
+  if(p.recipe)clean.recipe=Object.fromEntries(['family','secondary','structure','direction',...inspiredMetrics,'freedom'].filter(k=>p.recipe[k]!==undefined).map(k=>[k,p.recipe[k]]));
+  if(typeof p.visionModel==='string')clean.visionModel=p.visionModel.slice(0,150);
+  return clean;
+}
+function snapshotPreset(slot) {
+  const s=parentSettings(slot);
+  if(s.shape!=='extracted'||!s.preset.smart)throw Error('Выберите пресет, созданный из изображения.');
+  return cleanFilePreset({...s.preset,colors:[...s.colors],values:{...Object.fromEntries(controls.map(([k])=>[k,s[k]])),seed:s.seed}});
+}
+function installFilePreset(slot,p,keep=false) {
+  p=cleanFilePreset(p);
+  const key='smart-'+Date.now().toString(36)+'-'+freshSeed().toString(36);presets[key]=p;
+  for(const target of ['a','b']){const option=document.createElement('option');option.value=key;option.textContent=p.name;byId(target+'-preset').append(option);}
+  let saved=true;
+  if(keep){savedSmartKeys.add(key);saved=saveSmartPresets();if(!saved)savedSmartKeys.delete(key);}
+  setParent(slot,key);return {key,saved};
+}
+function saveCurrentPreset(slot) {
+  try{
+    const p=snapshotPreset(slot),key=parents[slot].key,wasSaved=savedSmartKeys.has(key);
+    presets[key]=p;savedSmartKeys.add(key);const saved=saveSmartPresets();
+    if(!saved&&!wasSaved)savedSmartKeys.delete(key);
+    setParent(slot,key);
+    requestAnimationFrame(()=>status.textContent=saved?'Пресет сохранён в библиотеке браузера.':'Браузер не разрешил сохранить библиотеку. Можно скачать файл настроек.');
+  }catch(error){status.textContent=error.message;}
+}
+function presetFileDocument(slot) {return {kind:'gradient-studio-preset',version:1,preset:snapshotPreset(slot)};}
+function exportPresetFile(slot) {
+  try {
+    const data=presetFileDocument(slot),blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;
+    a.download=(data.preset.name.replace(/[<>:"/\\|?*\x00-\x1f]/g,'-').slice(0,80)||'gradient-preset')+'.json';
+    document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(error){status.textContent=error.message;}
+}
+function parsePresetFile(text) {
+  const data=JSON.parse(text.replace(/^\uFEFF/,''));
+  if(data?.kind!=='gradient-studio-preset'||data.version!==1)throw Error('Это не файл пресета Градиентной студии.');
+  return cleanFilePreset(data.preset);
+}
+async function importPresetFile(slot) {
+  const input=byId(slot+'-preset-file'),file=input.files[0];if(!file)return;
+  try {
+    if(file.size>16*1024*1024)throw Error('Файл пресета слишком большой: максимум 16 МБ.');
+    installFilePreset(slot,parsePresetFile(await file.text()),false);
+    requestAnimationFrame(()=>status.textContent='Пресет загружен на эту вкладку. Кнопка «Запомнить в браузере» сохранит его для следующего открытия студии.');
+  }catch(error){status.textContent=error instanceof SyntaxError?'Не удалось прочитать JSON-файл пресета.':error.message;}
+  finally{input.value='';}
+}
+
+byId('ai-close').addEventListener('click',closeInspired);
+byId('ai-dialog').addEventListener('cancel',event=>{event.preventDefault();closeInspired();});
+byId('ai-dialog').addEventListener('close',()=>{if(!byId('ai-dialog').open){aiSession?.abort?.abort();aiSession=null;}});
+byId('ai-apply').addEventListener('click',applyInspired);
+byId('ai-freedom').addEventListener('input',drawInspiredCandidates);
+byId('ai-detail').addEventListener('input',drawInspiredCandidates);
+for(let i=0;i<3;i++)byId('ai-card-'+i).addEventListener('click',()=>{if(aiSession){aiSession.selected=i;for(let j=0;j<3;j++)byId('ai-card-'+j).setAttribute('aria-pressed',String(i===j));}});
+
+restoreSmartPresets();
+
+buildPanel('a');buildPanel('b');
+for(const select of document.querySelectorAll('select'))enhanceSelect(select);
+byId('undo').addEventListener('click',undoGeneration);
+const parentLayoutObserver=new ResizeObserver(updateParentLayout);
+parentLayoutObserver.observe(byId('parents'));parentLayoutObserver.observe(byId('parent-b'));
+window.addEventListener('resize',updateParentLayout);
+byId('cross-enabled').addEventListener('change',schedule);
+byId('cross-amount').addEventListener('input',schedule);
+byId('mutation').addEventListener('input',schedule);
+byId('mix-seed').addEventListener('change',event=>{
+  if(!event.target.validity.valid || !Number.isInteger(event.target.valueAsNumber)) event.target.value=14721;
+  schedule();
+});
+byId('format').addEventListener('change',changeFormat);
+byId('random-all').addEventListener('click',fullRandom);
+byId('save').addEventListener('click',save);
+byId('cross-enabled').checked=false;
+schedule();
+
+</script>
+</body>
+</html>
